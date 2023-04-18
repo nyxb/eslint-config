@@ -1,6 +1,6 @@
 {
   "name": "@nyxb/eslint-config-monorepo",
-  "version": "0.0.43",
+  "version": "0.0.44",
   "private": true,
   "packageManager": "pnpm@8.3.0",
   "author": "Dennis Ollhoff <dennis.ollhoff@9entities.tech> (https://💻nyxb.ws)",

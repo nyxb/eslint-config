@@ -1,4 +1,4 @@
-import { defineConfig } from '@nyxb/bump'
+import { defineConfig } from 'bumpp'
 
 export default defineConfig({
   all: true,
