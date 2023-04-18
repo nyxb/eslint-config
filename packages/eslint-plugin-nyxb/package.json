@@ -1,0 +1,31 @@
+{
+  "name": "eslint-plugin-nyxb",
+  "version": "0.0.43",
+  "author": "Dennis Ollhoff <dennis.ollhoff@9entities.tech> (https://💻nyxb.ws)",
+  "license": "MIT",
+  "hompage": "https://💻nyxb.ws",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nyxb/eslint-config.git"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rimraf dist && unbuild",
+    "stub": "unbuild --stub",
+    "test": "vitest",
+    "prepublishOnly": "nyxr build"
+  },
+  "dependencies": {
+    "@typescript-eslint/utils": "^5.59.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "unbuild": "^1.2.1",
+    "vitest": "^0.30.1"
+  }
+}

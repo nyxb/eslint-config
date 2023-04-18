@@ -1,0 +1,6 @@
+{
+  "extends": "@nyxb",
+  "plugins": [
+    "nyxb"
+  ]
+}
