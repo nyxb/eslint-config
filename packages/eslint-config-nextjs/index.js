@@ -23,6 +23,7 @@ module.exports = {
     'eslint-config-next',
   ],
   rules: {
+    '@typescript-eslint/no-use-before-define': 'off',
     'jsx-quotes': [
       'error',
       'prefer-single',
