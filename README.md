@@ -67,7 +67,7 @@ Type aware rules are enabled when a `tsconfig.eslint.json` is found in the proje
 process.env.ESLINT_TSCONFIG = 'tsconfig.json'
 
 module.exports = {
-  extends: '@nyxb'
+   extends: '@nyxb'
 }
 ```
 
