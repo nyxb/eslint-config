@@ -18,7 +18,11 @@ module.exports = {
             'no-undef': 'off',
             'no-use-before-define': 'off',
             ...(TS
-               ? { '@typescript-eslint/no-unused-vars': 'off', '@typescript-eslint/no-use-before-define': 'off' }
+               ? {
+                     '@typescript-eslint/no-unused-vars': 'off',
+                     '@typescript-eslint/no-use-before-define': 'off',
+                     '@typescript-eslint/indent': ['error', 3, { SwitchCase: 3 }],
+                  }
                : null),
          },
       },
