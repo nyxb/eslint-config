@@ -12,6 +12,7 @@
 - Sorted imports, dangling commas
 - Reasonable defaults, best practices, only one-line of config
 - **Style principle**: Minimal for reading, stable for diff
+- **Indentation**: 3 spaces/tab (to end the eternal fight 2v4. 3 is the best)
 
 ## Usage
 
@@ -97,6 +98,8 @@ npm i -D lint-staged simple-git-hooks
 Prettier?
 [Why I don't use Prettier](https://dev.to/nyxb/prettier-a-double-edged-sword-for-code-formatting-29o9)
 
+3 indent?
+[Why 3 indent is the best](https://dev.to/nyxb/welcome-to-the-magical-world-of-indentation-1fc)
 ### How to lint CSS?
 
 If you still prefer CSS, you can use [stylelint](https://stylelint.io/) for CSS linting.
