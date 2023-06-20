@@ -1,6 +1,6 @@
 {
   "name": "@nyxb/eslint-config-react",
-  "version": "0.0.53",
+  "version": "0.1.0",
   "author": "Dennis Ollhoff <dennis.ollhoff@9entities.tech> (https://💻nyxb.ws)",
   "license": "MIT",
   "hompage": "https://💻nyxb.ws",
@@ -27,8 +27,8 @@
     "eslint-plugin-react-hooks": "^4.6.0"
   },
   "devDependencies": {
-    "eslint": "^8.38.0",
+    "eslint": "^8.43.0",
     "react": "^18.2.0",
-    "typescript": "^5.0.4"
+    "typescript": "^5.1.3"
   }
 }

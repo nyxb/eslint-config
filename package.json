@@ -1,11 +1,11 @@
 {
   "name": "@nyxb/eslint-config-monorepo",
-  "version": "0.0.53",
+  "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@8.3.0",
+  "packageManager": "pnpm@8.6.3",
   "author": "Dennis Ollhoff <dennis.ollhoff@9entities.tech> (https://💻nyxb.ws)",
   "license": "MIT",
-  "hompage": "https://💻nyxb.ws",
+  "homepage": "https://💻nyxb.ws",
   "repository": {
     "type": "git",
     "url": "https://github.com/nyxb/eslint-config.git"
@@ -21,10 +21,10 @@
   },
   "devDependencies": {
     "@nyxb/eslint-config": "workspace:*",
-    "bumpp": "^9.1.0",
-    "eslint": "^8.38.0",
+    "bumpp": "^9.1.1",
+    "eslint": "^8.43.0",
     "eslint-plugin-nyxb": "link:./packages/eslint-plugin-nyxb",
-    "rimraf": "^5.0.0",
-    "typescript": "^5.0.4"
+    "rimraf": "^5.0.1",
+    "typescript": "^5.1.3"
   }
 }
