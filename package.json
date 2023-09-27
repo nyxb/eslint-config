@@ -18,9 +18,9 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --clean --dts",
     "stub": "tsup src/index.ts --format esm --clean",
-    "lint": "bun run stub && eslint .",
-    "prepack": "bun build",
-    "release": "bumpp && bun publish",
+    "lint": "pnpm run stub && eslint .",
+    "prepack": "nyxr build",
+    "release": "bumpp && pnpm publish",
     "test": "vitest",
     "typecheck": "tsc --noEmit"
   },
