@@ -36,7 +36,7 @@ function runWithConfig(name: string, configs: OptionsConfig) {
 // @eslint-disable
 import nyxb from '@nyxb/eslint-config'
 
-export default antfu(${JSON.stringify(configs)})
+export default nyxb(${JSON.stringify(configs)})
   `)
 
     await execa('npx', ['eslint', '.', '--fix'], {

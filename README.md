@@ -140,7 +140,7 @@ You can optionally enable the [type aware rules](https://typescript-eslint.io/li
 // eslint.config.js
 import nyxb from '@nyxb/eslint-config'
 
-export default antfu({
+export default nyxb({
   typescript: {
     tsconfigPath: 'tsconfig.json',
   },

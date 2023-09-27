@@ -11,8 +11,8 @@ export const javascriptStylistic: FlatESLintConfigItem[] = [
       style: pluginStylisticJs,
     },
     rules: {
-      'antfu/consistent-list-newline': 'error',
-      'antfu/if-newline': 'error',
+      'nyxb/consistent-list-newline': 'error',
+      'nyxb/if-newline': 'error',
 
       'comma-dangle': ['error', 'always-multiline'],
       'curly': ['error', 'multi-or-nest', 'consistent'],
@@ -27,7 +27,7 @@ export const javascriptStylistic: FlatESLintConfigItem[] = [
       'style/comma-style': ['error', 'last'],
       'style/computed-property-spacing': ['error', 'never', { enforceForClassMembers: true }],
       'style/dot-location': ['error', 'property'],
-      'style/indent': ['error', 2, {
+      'style/indent': ['error', 3, {
         ArrayExpression: 1,
         CallExpression: { arguments: 1 },
         FunctionDeclaration: { body: 1, parameters: 1 },

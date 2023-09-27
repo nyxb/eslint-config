@@ -34,9 +34,9 @@ export function javascript(options: OptionsIsInEditor = {}): FlatESLintConfigIte
       rules: {
         'accessor-pairs': ['error', { enforceForClassMembers: true, setWithoutGet: true }],
 
-        'antfu/import-dedupe': 'error',
-        'antfu/no-import-node-modules-by-path': 'error',
-        'antfu/top-level-function': 'error',
+        'nyxb/import-dedupe': 'error',
+        'nyxb/no-import-node-modules-by-path': 'error',
+        'nyxb/top-level-function': 'error',
 
         'array-callback-return': 'error',
         'arrow-parens': ['error', 'as-needed', { requireForBlockBody: true }],

@@ -25,7 +25,7 @@ export function typescript(options?: OptionsComponentExts): FlatESLintConfigItem
         },
       },
       plugins: {
-        antfu: pluginNyxb,
+        nyxb: pluginNyxb,
         import: pluginImport,
         ts: pluginTs as any,
       },
@@ -41,11 +41,11 @@ export function typescript(options?: OptionsComponentExts): FlatESLintConfigItem
           'ts/',
         ),
 
-        'antfu/generic-spacing': 'error',
-        'antfu/named-tuple-spacing': 'error',
-        'antfu/no-cjs-exports': 'error',
-        'antfu/no-const-enum': 'error',
-        'antfu/no-ts-export-equal': 'error',
+        'nyxb/generic-spacing': 'error',
+        'nyxb/named-tuple-spacing': 'error',
+        'nyxb/no-cjs-exports': 'error',
+        'nyxb/no-const-enum': 'error',
+        'nyxb/no-ts-export-equal': 'error',
 
         'no-dupe-class-members': OFF,
         'no-extra-parens': OFF,
