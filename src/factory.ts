@@ -1,94 +1,163 @@
 import process from 'node:process'
-import type { FlatESLintConfigItem } from 'eslint-define-config'
+import fs from 'node:fs'
 import { isPackageExists } from 'local-pkg'
+import gitignore from 'eslint-config-flat-gitignore'
+import type { FlatESLintConfigItem, OptionsConfig } from './types'
 import {
-  comments,
-  ignores,
-  imports,
-  javascript,
-  javascriptStylistic,
-  jsdoc,
-  jsonc,
-  markdown,
-  node,
-  sortPackageJson,
-  sortTsconfig,
-  test,
-  typescript,
-  typescriptStylistic,
-  typescriptWithLanguageServer,
-  unicorn,
-  vue,
-  yml,
-  next,
-  react,
+   comments,
+   ignores,
+   imports,
+   javascript,
+   jsdoc,
+   jsonc,
+   markdown,
+   node,
+   sortPackageJson,
+   sortTsconfig,
+   stylistic,
+   test,
+   typescript,
+   unicorn,
+   vue,
+   yaml,
 } from './configs'
-import type { OptionsConfig } from './types'
 import { combine } from './utils'
 
-const flatConfigProps: (keyof FlatESLintConfigItem)[] = ['files', 'ignores', 'languageOptions', 'linterOptions', 'processor', 'plugins', 'rules', 'settings']
+const flatConfigProps: (keyof FlatESLintConfigItem)[] = [
+   'files',
+   'ignores',
+   'languageOptions',
+   'linterOptions',
+   'processor',
+   'plugins',
+   'rules',
+   'settings',
+]
+
+const VuePackages = [
+   'vue',
+   'nuxt',
+   'vitepress',
+   '@slidev/cli',
+]
 
 /**
  * Construct an array of ESLint flat config items.
  */
 export function nyxb(options: OptionsConfig & FlatESLintConfigItem = {}, ...userConfigs: (FlatESLintConfigItem | FlatESLintConfigItem[])[]) {
-  const isInEditor = options.isInEditor ?? !!((process.env.VSCODE_PID || process.env.JETBRAINS_IDE) && !process.env.CI)
-  const enableVue = options.vue ?? (isPackageExists('vue') || isPackageExists('nuxt') || isPackageExists('vitepress') || isPackageExists('@slidev/cli'))
-  const enableReact = options.react ?? isPackageExists('react')
-  const enableNext = options.next ?? isPackageExists('next')
-  const enableTypeScript = options.typescript ?? isPackageExists('typescript')
-  const enableStylistic = options.stylistic ?? true
+   const {
+      isInEditor = !!((process.env.VSCODE_PID || process.env.JETBRAINS_IDE) && !process.env.CI),
+      vue: enableVue = VuePackages.some(i => isPackageExists(i)),
+      typescript: enableTypeScript = isPackageExists('typescript'),
+      stylistic: enableStylistic = true,
+      gitignore: enableGitignore = true,
+      overrides = {},
+      componentExts = [],
+   } = options
 
-  const configs = [ignores, javascript({ isInEditor }), comments, node, jsdoc, imports, unicorn]
+   const configs: FlatESLintConfigItem[][] = []
 
-  // In the future we may support more component extensions like Svelte or so
-  const componentExts: string[] = []
-  if (enableVue) componentExts.push('vue')
+   if (enableGitignore) {
+      if (typeof enableGitignore !== 'boolean') {
+         configs.push([gitignore(enableGitignore)])
+      }
+      else {
+         if (fs.existsSync('.gitignore'))
+            configs.push([gitignore()])
+      }
+   }
 
-  if (enableStylistic) configs.push(javascriptStylistic)
+   // Base configs
+   configs.push(
+      ignores(),
+      javascript({
+         isInEditor,
+         overrides: overrides.javascript,
+      }),
+      comments(),
+      node(),
+      jsdoc({
+         stylistic: enableStylistic,
+      }),
+      imports({
+         stylistic: enableStylistic,
+      }),
+      unicorn(),
+   )
 
-  if (enableTypeScript) {
-    configs.push(typescript({ componentExts }))
+   if (enableVue)
+      componentExts.push('vue')
 
-    if (typeof enableTypeScript !== 'boolean') {
+   if (enableTypeScript) {
+      configs.push(typescript({
+         ...typeof enableTypeScript !== 'boolean'
+            ? enableTypeScript
+            : {},
+         componentExts,
+         overrides: overrides.typescript,
+      }))
+   }
+
+   if (enableStylistic)
+      configs.push(stylistic())
+
+   if (options.test ?? true) {
+      configs.push(test({
+         isInEditor,
+         overrides: overrides.test,
+      }))
+   }
+
+   if (enableVue) {
+      configs.push(vue({
+         overrides: overrides.vue,
+         stylistic: enableStylistic,
+         typescript: !!enableTypeScript,
+      }))
+   }
+
+   if (options.jsonc ?? true) {
       configs.push(
-        typescriptWithLanguageServer({
-          ...enableTypeScript,
-          componentExts,
-        })
+         jsonc({
+            overrides: overrides.jsonc,
+            stylistic: enableStylistic,
+         }),
+         sortPackageJson(),
+         sortTsconfig(),
       )
-    }
+   }
 
-    if (enableStylistic) configs.push(typescriptStylistic)
-  }
+   if (options.yaml ?? true) {
+      configs.push(yaml({
+         overrides: overrides.yaml,
+         stylistic: enableStylistic,
+      }))
+   }
 
-  if (options.test ?? true) configs.push(test({ isInEditor }))
+   if (options.markdown ?? true) {
+      configs.push(markdown({
+         componentExts,
+         overrides: overrides.markdown,
+      }))
+   }
 
-  if (enableVue) configs.push(vue({ typescript: !!enableTypeScript }))
+   // User can optionally pass a flat config item to the first argument
+   // We pick the known keys as ESLint would do schema validation
+   const fusedConfig = flatConfigProps.reduce((acc, key) => {
+      if (key in options)
+         acc[key] = options[key] as any
+      return acc
+   }, {} as FlatESLintConfigItem)
+   if (Object.keys(fusedConfig).length)
+      configs.push([fusedConfig])
 
-  if (enableReact && !enableNext) {
-    configs.push(react({ typescript: !!enableTypeScript }))
-  }
+   const merged = combine(
+      ...configs,
+      ...userConfigs,
+   )
 
-  if (enableNext) {
-    configs.push(next({ typescript: !!enableTypeScript }))
-  }
+   // recordRulesStateConfigs(merged)
+   // warnUnnecessaryOffRules()
 
-  if (options.jsonc ?? true) {
-    configs.push(jsonc, sortPackageJson, sortTsconfig)
-  }
-
-  if (options.yaml ?? true) configs.push(yml)
-
-  if (options.markdown ?? true) configs.push(markdown({ componentExts }))
-
-  // User can optionally pass a flat config item to the first argument
-  // We pick the known keys as ESLint would do schema validation
-  const fusedConfig = flatConfigProps.reduce((acc, key) => {
-    if (key in options) acc[key] = options[key]
-    return acc
-  }, {} as FlatESLintConfigItem)
-  if (Object.keys(fusedConfig).length) configs.push([fusedConfig])
-
-  return combine(...configs, ...userConfigs)
+   return merged
 }

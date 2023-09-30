@@ -1,66 +1,88 @@
-import type { FlatESLintConfigItem } from 'eslint-define-config'
+import type { FlatESLintConfigItem, OptionsComponentExts, OptionsOverrides } from '../types'
 import { GLOB_MARKDOWN, GLOB_MARKDOWN_CODE } from '../globs'
-import { pluginMarkdown, pluginTs } from '../plugins'
+import { pluginMarkdown } from '../plugins'
 import { OFF } from '../flags'
-import type { OptionsComponentExts } from '../types'
 
-export function markdown(options: OptionsComponentExts = {}): FlatESLintConfigItem[] {
-  const {
-    componentExts = [],
-  } = options
+export function markdown(options: OptionsComponentExts & OptionsOverrides = {}): FlatESLintConfigItem[] {
+   const {
+      componentExts = [],
+      overrides = {},
+   } = options
 
-  return [
-    {
-      files: [GLOB_MARKDOWN],
-      plugins: {
-        markdown: pluginMarkdown,
+   return [
+      {
+         name: 'nyxb:markdown:setup',
+         plugins: {
+            markdown: pluginMarkdown,
+         },
       },
-      processor: 'markdown/markdown',
-    },
-    {
-      files: [
-        GLOB_MARKDOWN_CODE,
-        ...componentExts.map(ext => `${GLOB_MARKDOWN}/**/*.${ext}`),
-      ],
-      languageOptions: {
-        parserOptions: {
-          ecmaFeatures: {
-            impliedStrict: true,
-          },
-        },
+      {
+         files: [GLOB_MARKDOWN],
+         name: 'nyxb:markdown:processor',
+         processor: 'markdown/markdown',
       },
-      plugins: {
-        ts: pluginTs as any,
+      {
+         files: [
+            GLOB_MARKDOWN_CODE,
+            ...componentExts.map(ext => `${GLOB_MARKDOWN}/**/*.${ext}`),
+         ],
+         languageOptions: {
+            parserOptions: {
+               ecmaFeatures: {
+                  impliedStrict: true,
+               },
+            },
+         },
+         name: 'nyxb:markdown:rules',
+         rules: {
+            'eol-last': OFF,
+            'no-alert': OFF,
+
+            'no-console': OFF,
+            'no-undef': OFF,
+            'no-unused-expressions': OFF,
+            'no-unused-vars': OFF,
+            'node/prefer-global/process': OFF,
+            'nyxb/no-cjs-exports': OFF,
+
+            'nyxb/no-ts-export-equal': OFF,
+
+            'style/comma-dangle': OFF,
+
+            'ts/consistent-type-imports': OFF,
+            'ts/no-namespace': OFF,
+            'ts/no-redeclare': OFF,
+            'ts/no-require-imports': OFF,
+            'ts/no-unused-vars': OFF,
+            'ts/no-use-before-define': OFF,
+            'ts/no-var-requires': OFF,
+
+            'unicode-bom': 'off',
+            'unused-imports/no-unused-imports': OFF,
+            'unused-imports/no-unused-vars': OFF,
+
+            // Type aware rules
+            ...{
+               'ts/await-thenable': OFF,
+               'ts/dot-notation': OFF,
+               'ts/no-floating-promises': OFF,
+               'ts/no-for-in-array': OFF,
+               'ts/no-implied-eval': OFF,
+               'ts/no-misused-promises': OFF,
+               'ts/no-throw-literal': OFF,
+               'ts/no-unnecessary-type-assertion': OFF,
+               'ts/no-unsafe-argument': OFF,
+               'ts/no-unsafe-assignment': OFF,
+               'ts/no-unsafe-call': OFF,
+               'ts/no-unsafe-member-access': OFF,
+               'ts/no-unsafe-return': OFF,
+               'ts/restrict-plus-operands': OFF,
+               'ts/restrict-template-expressions': OFF,
+               'ts/unbound-method': OFF,
+            },
+
+            ...overrides,
+         },
       },
-      rules: {
-        ...pluginMarkdown.configs.recommended.overrides[1].rules,
-
-        'nyxb/no-cjs-exports': OFF,
-        'nyxb/no-ts-export-equal': OFF,
-
-        'import/no-unresolved': OFF,
-
-        'no-alert': OFF,
-        'no-console': OFF,
-        'no-restricted-imports': OFF,
-        'no-undef': OFF,
-        'no-unused-expressions': OFF,
-        'no-unused-vars': OFF,
-
-        'node/prefer-global/process': OFF,
-
-        'ts/comma-dangle': OFF,
-        'ts/consistent-type-imports': OFF,
-        'ts/no-namespace': OFF,
-        'ts/no-redeclare': OFF,
-        'ts/no-require-imports': OFF,
-        'ts/no-unused-vars': OFF,
-        'ts/no-use-before-define': OFF,
-        'ts/no-var-requires': OFF,
-
-        'unused-imports/no-unused-imports': OFF,
-        'unused-imports/no-unused-vars': OFF,
-      },
-    },
-  ]
+   ]
 }

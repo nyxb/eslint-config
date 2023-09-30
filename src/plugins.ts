@@ -1,7 +1,7 @@
 // eslint-disable-next-line ts/ban-ts-comment
 // @ts-nocheck
 
-export { default as pluginAntfu } from 'eslint-plugin-antfu'
+export { default as pluginNyxb } from 'eslint-plugin-nyxb'
 export { default as pluginComments } from 'eslint-plugin-eslint-comments'
 export * as pluginImport from 'eslint-plugin-i'
 export { default as pluginJsdoc } from 'eslint-plugin-jsdoc'

@@ -1,157 +1,145 @@
 import process from 'node:process'
-import type { FlatESLintConfigItem } from 'eslint-define-config'
-import { GLOB_TS, GLOB_TSX } from '../globs'
-import { parserTs, pluginNyxb, pluginImport, pluginTs } from '../plugins'
+import type { FlatESLintConfigItem, OptionsComponentExts, OptionsOverrides, OptionsTypeScriptParserOptions, OptionsTypeScriptWithTypes } from '../types'
+import { GLOB_SRC } from '../globs'
+import { parserTs, pluginImport, pluginNyxb, pluginTs } from '../plugins'
 import { OFF } from '../flags'
-import type { OptionsComponentExts, OptionsTypeScriptWithLanguageServer } from '../types'
 import { renameRules } from '../utils'
 
-export function typescript(options?: OptionsComponentExts): FlatESLintConfigItem[] {
-  const {
-    componentExts = [],
-  } = options ?? {}
+export function typescript(
+   options?: OptionsComponentExts & OptionsOverrides & OptionsTypeScriptWithTypes & OptionsTypeScriptParserOptions,
+): FlatESLintConfigItem[] {
+   const {
+      componentExts = [],
+      overrides = {},
+      parserOptions = {},
+      tsconfigPath,
+   } = options ?? {}
 
-  return [
-    {
-      files: [
-        GLOB_TS,
-        GLOB_TSX,
-        ...componentExts.map(ext => `**/*.${ext}`),
-      ],
-      languageOptions: {
-        parser: parserTs,
-        parserOptions: {
-          sourceType: 'module',
-        },
-      },
-      plugins: {
-        nyxb: pluginNyxb,
-        import: pluginImport,
-        ts: pluginTs as any,
-      },
-      rules: {
-        ...renameRules(
-          pluginTs.configs['eslint-recommended'].overrides![0].rules!,
-          '@typescript-eslint/',
-          'ts/',
-        ),
-        ...renameRules(
-          pluginTs.configs.strict.rules!,
-          '@typescript-eslint/',
-          'ts/',
-        ),
+   const typeAwareRules: FlatESLintConfigItem['rules'] = {
+      'dot-notation': OFF,
+      'no-implied-eval': OFF,
+      'no-throw-literal': OFF,
+      'ts/await-thenable': 'error',
+      'ts/dot-notation': ['error', { allowKeywords: true }],
+      'ts/no-floating-promises': 'error',
+      'ts/no-for-in-array': 'error',
+      'ts/no-implied-eval': 'error',
+      'ts/no-misused-promises': 'error',
+      'ts/no-throw-literal': 'error',
+      'ts/no-unnecessary-type-assertion': 'error',
+      'ts/no-unsafe-argument': 'error',
+      'ts/no-unsafe-assignment': 'error',
+      'ts/no-unsafe-call': 'error',
+      'ts/no-unsafe-member-access': 'error',
+      'ts/no-unsafe-return': 'error',
+      'ts/restrict-plus-operands': 'error',
+      'ts/restrict-template-expressions': 'error',
+      'ts/unbound-method': 'error',
+   }
 
-        'nyxb/generic-spacing': 'error',
-        'nyxb/named-tuple-spacing': 'error',
-        'nyxb/no-cjs-exports': 'error',
-        'nyxb/no-const-enum': 'error',
-        'nyxb/no-ts-export-equal': 'error',
+   return [
+      {
+      // Install the plugins without globs, so they can be configured separately.
+         name: 'nyxb:typescript:setup',
+         plugins: {
+            import: pluginImport,
+            nyxb: pluginNyxb,
+            ts: pluginTs as any,
+         },
+      },
+      {
+         files: [
+            GLOB_SRC,
+            ...componentExts.map(ext => `**/*.${ext}`),
+         ],
+         languageOptions: {
+            parser: parserTs,
+            parserOptions: {
+               sourceType: 'module',
+               ...tsconfigPath
+                  ? {
+                        project: [tsconfigPath],
+                        tsconfigRootDir: process.cwd(),
+                     }
+                  : {},
+               ...parserOptions as any,
+            },
+         },
+         name: 'nyxb:typescript:rules',
+         rules: {
+            ...renameRules(
+               pluginTs.configs['eslint-recommended'].overrides![0].rules!,
+               '@typescript-eslint/',
+               'ts/',
+            ),
+            ...renameRules(
+               pluginTs.configs.strict.rules!,
+               '@typescript-eslint/',
+               'ts/',
+            ),
 
-        'no-dupe-class-members': OFF,
-        'no-extra-parens': OFF,
-        'no-invalid-this': OFF,
-        'no-loss-of-precision': OFF,
-        'no-redeclare': OFF,
-        'no-use-before-define': OFF,
-        'no-useless-constructor': OFF,
-        'ts/ban-ts-comment': ['error', { 'ts-ignore': 'allow-with-description' }],
-        'ts/ban-ts-ignore': OFF,
-        'ts/consistent-indexed-object-style': OFF,
-        'ts/consistent-type-definitions': ['error', 'interface'],
-        'ts/consistent-type-imports': ['error', { disallowTypeAnnotations: false, prefer: 'type-imports' }],
-        'ts/explicit-function-return-type': OFF,
-        'ts/explicit-member-accessibility': OFF,
-        'ts/explicit-module-boundary-types': OFF,
-        'ts/naming-convention': OFF,
-        'ts/no-dupe-class-members': 'error',
-        'ts/no-dynamic-delete': OFF,
-        'ts/no-empty-function': OFF,
-        'ts/no-empty-interface': OFF,
-        'ts/no-explicit-any': OFF,
-        'ts/no-extra-parens': ['error', 'functions'],
-        'ts/no-invalid-this': 'error',
-        'ts/no-invalid-void-type': OFF,
-        'ts/no-loss-of-precision': 'error',
-        'ts/no-non-null-assertion': OFF,
-        'ts/no-redeclare': 'error',
-        'ts/no-require-imports': 'error',
-        'ts/no-unused-vars': OFF,
-        'ts/no-use-before-define': ['error', { classes: false, functions: false, variables: true }],
-        'ts/parameter-properties': OFF,
-        'ts/prefer-ts-expect-error': 'error',
-        'ts/triple-slash-reference': OFF,
-      },
-    },
-    {
-      files: ['**/*.d.ts'],
-      rules: {
-        'eslint-comments/no-unlimited-disable': OFF,
-        'import/no-duplicates': OFF,
-        'unused-imports/no-unused-vars': OFF,
-      },
-    },
-    {
-      files: ['**/*.{test,spec}.ts?(x)'],
-      rules: {
-        'no-unused-expressions': OFF,
-      },
-    },
-    {
-      files: ['**/*.js', '**/*.cjs'],
-      rules: {
-        'ts/no-require-imports': OFF,
-        'ts/no-var-requires': OFF,
-      },
-    },
-  ]
-}
+            'no-dupe-class-members': OFF,
+            'no-extra-parens': OFF,
+            'no-invalid-this': OFF,
+            'no-loss-of-precision': OFF,
+            'no-redeclare': OFF,
 
-export function typescriptWithLanguageServer(options: OptionsTypeScriptWithLanguageServer & OptionsComponentExts): FlatESLintConfigItem[] {
-  const {
-    componentExts = [],
-    tsconfigPath,
-    tsconfigRootDir = process.cwd(),
-  } = options
+            'no-use-before-define': OFF,
+            'no-useless-constructor': OFF,
+            'nyxb/generic-spacing': 'error',
+            'nyxb/named-tuple-spacing': 'error',
+            'nyxb/no-cjs-exports': 'error',
+            'nyxb/no-const-enum': 'error',
+            'nyxb/no-ts-export-equal': 'error',
+            'ts/ban-ts-comment': ['error', { 'ts-ignore': 'allow-with-description' }],
+            'ts/ban-types': ['error', { types: { Function: false } }],
+            'ts/consistent-type-definitions': ['error', 'interface'],
+            'ts/consistent-type-imports': ['error', { disallowTypeAnnotations: false, prefer: 'type-imports' }],
+            'ts/no-dupe-class-members': 'error',
+            'ts/no-dynamic-delete': OFF,
+            'ts/no-explicit-any': OFF,
+            'ts/no-extra-parens': ['error', 'functions'],
+            'ts/no-extraneous-class': OFF,
+            'ts/no-invalid-this': 'error',
+            'ts/no-invalid-void-type': OFF,
+            'ts/no-loss-of-precision': 'error',
+            'ts/no-non-null-assertion': OFF,
+            'ts/no-redeclare': 'error',
+            'ts/no-require-imports': 'error',
+            'ts/no-unused-vars': OFF,
+            'ts/no-use-before-define': ['error', { classes: false, functions: false, variables: true }],
+            'ts/no-useless-constructor': OFF,
+            'ts/prefer-ts-expect-error': 'error',
+            'ts/triple-slash-reference': OFF,
+            'ts/unified-signatures': OFF,
 
-  return [
-    {
-      files: [
-        GLOB_TS,
-        GLOB_TSX,
-        ...componentExts.map(ext => `**/*.${ext}`),
-      ],
-      ignores: ['**/*.md/*.*'],
-      languageOptions: {
-        parser: parserTs,
-        parserOptions: {
-          project: [tsconfigPath],
-          tsconfigRootDir,
-        },
+            ...tsconfigPath ? typeAwareRules : {},
+            ...overrides,
+         },
       },
-      plugins: {
-        ts: pluginTs as any,
+      {
+         files: ['**/*.d.ts'],
+         name: 'nyxb:typescript:dts-overrides',
+         rules: {
+            'eslint-comments/no-unlimited-disable': OFF,
+            'import/no-duplicates': OFF,
+            'unused-imports/no-unused-vars': OFF,
+         },
       },
-      rules: {
-        'dot-notation': OFF,
-        'no-implied-eval': OFF,
-        'no-throw-literal': OFF,
-        'ts/await-thenable': 'error',
-        'ts/dot-notation': ['error', { allowKeywords: true }],
-        'ts/no-floating-promises': 'error',
-        'ts/no-for-in-array': 'error',
-        'ts/no-implied-eval': 'error',
-        'ts/no-misused-promises': 'error',
-        'ts/no-throw-literal': 'error',
-        'ts/no-unnecessary-type-assertion': 'error',
-        'ts/no-unsafe-argument': 'error',
-        'ts/no-unsafe-assignment': 'error',
-        'ts/no-unsafe-call': 'error',
-        'ts/no-unsafe-member-access': 'error',
-        'ts/no-unsafe-return': 'error',
-        'ts/restrict-plus-operands': 'error',
-        'ts/restrict-template-expressions': 'error',
-        'ts/unbound-method': 'error',
+      {
+         files: ['**/*.{test,spec}.ts?(x)'],
+         name: 'nyxb:typescript:tests-overrides',
+         rules: {
+            'no-unused-expressions': OFF,
+         },
       },
-    },
-  ]
+      {
+         files: ['**/*.js', '**/*.cjs'],
+         name: 'nyxb:typescript:javascript-overrides',
+         rules: {
+            'ts/no-require-imports': OFF,
+            'ts/no-var-requires': OFF,
+         },
+      },
+   ]
 }

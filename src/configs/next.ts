@@ -1,34 +1,51 @@
-import type { FlatESLintConfigItem } from 'eslint-define-config';
-import { GLOB_REACT } from '../globs';
-import { parserTs, pluginNext } from '../plugins';
-import { OFF } from '../flags';
-import type { OptionsHasTypeScript } from '../types';
-import { renameRules } from '../utils'
+import type { FlatESLintConfigItem, OptionsHasTypeScript, OptionsOverrides, OptionsStylistic } from '../types'
 
-export function next(options: OptionsHasTypeScript = {}): FlatESLintConfigItem[] {
-  return [
-    {
-      files: [GLOB_REACT],
-      languageOptions: {
-        parser: options.typescript ? parserTs as any : null,
-        parserOptions: {
-          ecmaFeatures: {
-            jsx: true,
-          },
-          sourceType: 'module',
-        },
+import { GLOB_REACT } from '../globs' // Ersetzt GLOB_REACT mit GLOB_NEXT für bessere Klarheit
+import { parserTs, pluginNext } from '../plugins'
+import { OFF } from '../flags'
+
+export function next(
+   options: OptionsHasTypeScript & OptionsOverrides & OptionsStylistic = {},
+): FlatESLintConfigItem[] {
+   const {
+      overrides = {},
+      stylistic = true,
+   } = options
+
+   return [
+      {
+         name: 'nyxb:next:setup',
+         plugins: {
+            next: pluginNext,
+         },
       },
-      plugins: {
-         'next': pluginNext, // Hinzugefügt das Next.js Plugin
-       },
-      rules: {
-         ...renameRules(
-            pluginNext.configs.recommended.rules, // Die tatsächlichen Regeln hängen von der Konfiguration ab, die Sie verwenden
-            '@next/next/',
-            'next/',
-          ),
-        'react/react-in-jsx-scope': OFF,
+      {
+         files: [GLOB_REACT],
+         languageOptions: {
+            parser: options.typescript ? parserTs as any : null,
+            parserOptions: {
+               ecmaFeatures: {
+                  jsx: true,
+               },
+               sourceType: 'module',
+            },
+         },
+         name: 'nyxb:next:rules',
+         rules: {
+            ...pluginNext.configs.recommended.rules as any,
+
+            'react/react-in-jsx-scope': OFF,
+
+            // Hier nach Bedarf weitere Next.js-spezifische Regeln hinzufügen
+
+            ...stylistic
+               ? {
+                     // Hier stilistische Regeln hinzufügen, ähnlich ich es in der Vue-Konfiguration getan haben
+                  }
+               : {},
+
+            ...overrides,
+         },
       },
-    },
-  ];
+   ]
 }
