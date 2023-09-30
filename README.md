@@ -31,6 +31,8 @@ pnpm add -D eslint @nyxb/eslint-config
 
 ### ⚙️ Create config file
 
+With [`"type": "module"`](https://nodejs.org/api/packages.html#type) in `package.json` (recommended):
+
 ```js
 // eslint.config.js
 import nyxb from '@nyxb/eslint-config'
@@ -38,7 +40,16 @@ import nyxb from '@nyxb/eslint-config'
 export default nyxb()
 ```
 
-> You don't need `.eslintignore` normally as it has been provided by the preset.
+With CJS:
+
+```js
+// eslint.config.js
+const antfu = require('@antfu/eslint-config').default
+
+module.exports = antfu()
+```
+
+> Note that `.eslintignore` no longer works in Flat config, see [customization](#customization) for more details.
 
 ### ➕ Add script for package.json
 
