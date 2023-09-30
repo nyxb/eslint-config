@@ -18,6 +18,7 @@
   "scripts": {
     "build": "tsup src/index.ts --format esm --clean --dts",
     "stub": "tsup src/index.ts --format esm --clean",
+    "dev": "tsup src/index.ts --format esm,cjs --watch & eslint-flat-config-viewer",
     "lint": "pnpm run stub && eslint .",
     "prepack": "nyxr build",
     "release": "bumpp && pnpm publish",
@@ -37,6 +38,7 @@
     "@typescript-eslint/parser": "^6.7.2",
     "eslint-config-flat-gitignore": "^0.1.0",
     "eslint-define-config": "^1.23.0",
+    "eslint-flat-config-viewer": "^0.0.8",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-i": "^2.28.1",
     "eslint-plugin-jsdoc": "^46.8.2",
@@ -48,6 +50,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-unicorn": "^48.0.1",
     "eslint-plugin-unused-imports": "^3.0.0",
+    "eslint-plugin-vitest": "^0.3.1",
     "eslint-plugin-vue": "^9.17.0",
     "eslint-plugin-yml": "^1.9.0",
     "globals": "^13.22.0",

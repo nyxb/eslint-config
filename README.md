@@ -131,6 +131,8 @@ Since flat config requires us to explicitly provide the plugin names (instead of
 | `@stylistic/js/*` | `style/*` | [@stylistic/eslint-plugin-js](https://github.com/eslint-stylistic/eslint-stylistic) |
 | `@stylistic/ts/*` | `style-ts/*` | [@stylistic/eslint-plugin-ts](https://github.com/eslint-stylistic/eslint-stylistic) |
 | `@next/next/*` | `next/*` | [eslint-plugin-next](https://www.npmjs.com/package/eslint-plugin-next) |
+| `test/*` | `vitest/*` | [eslint-plugin-vitest](https://github.com/veritem/eslint-plugin-vitest) |
+| `test/*` | `no-only-tests/*` | [eslint-plugin-no-only-tests](https://github.com/levibuzolic/eslint-plugin-no-only-tests) |
 
 When you want to overrides rules, or disable them inline, you need to update to the new prefix:
 
