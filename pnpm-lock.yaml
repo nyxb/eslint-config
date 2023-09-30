@@ -63,8 +63,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0
       eslint-plugin-nyxb:
-        specifier: ^1.0.0-beta.0
-        version: 1.0.0-beta.1(eslint@8.50.0)(typescript@5.2.2)
+        specifier: ^1.0.0-beta.2
+        version: 1.0.0-beta.2(eslint@8.50.0)(typescript@5.2.2)
       eslint-plugin-react:
         specifier: ^7.33.2
         version: 7.33.2(eslint@8.50.0)
@@ -2224,8 +2224,8 @@ packages:
     engines: {node: '>=5.0.0'}
     dev: false
 
-  /eslint-plugin-nyxb@1.0.0-beta.1(eslint@8.50.0)(typescript@5.2.2):
-    resolution: {integrity: sha512-JMc0iAOuZoWgfalNvXND73zlntxgW9zro0Qm5nBcx4mNoPz7YKUsOJ8GZIErWvPP7h6L8npC8scuXOI4hxzXCg==}
+  /eslint-plugin-nyxb@1.0.0-beta.2(eslint@8.50.0)(typescript@5.2.2):
+    resolution: {integrity: sha512-s80unt3nJ0COGwFCWEDw9Pos3/vdKoqOG72X53yPPSwbGLihCJA+cXvKQIofZFIz4AaKiMXxiigW7AjIJF6BmQ==}
     dependencies:
       '@typescript-eslint/utils': 6.7.3(eslint@8.50.0)(typescript@5.2.2)
     transitivePeerDependencies:
