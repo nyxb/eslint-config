@@ -1,11 +1,8 @@
-<p align="center">
-<img src="https://github.com/nyxb/eslint-config/blob/main/.github/assets/cover-github_black.png.png#gh-light-mode-only">
-<img src="https://github.com/nyxb/eslint-config/blob/main/.github/assets/cover-github_light.png#gh-dark-mode-only">
-</p>
+[![cover][cover-src]][cover-href]
 
 [![npm version][npm-version-src]][npm-version-href] 
-[![npm downloads][npm-downloads-src]][npm-downloads-href] 
-[![bundle][bundle-src]][bundle-href] 
+[![npm downloads][npm-downloads-src]][npm-downloads-href]
+[![code style](https://nyxb.blog/badges/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
 [![License][license-src]][license-href]
 
 # @nyxb/eslint-config
@@ -315,13 +312,16 @@ Or you can always fork this repo and make your own.
 
 [MIT](./LICENSE) 💚 License © 2023 [Dennis Ollhoff](https://github.com/nyxb)
 
+<!-- Background -->
+
+[cover-src]: https://raw.githubusercontent.com/nyxb/eslint-config/main/.github/assets/cover-github.png
+[cover-href]: https://reactchemy.com
+
 <!-- Badges -->
 
-[npm-version-src]: https://img.shields.io/npm/v/ext-name?style=flat&colorA=18181B&colorB=14F195
-[npm-version-href]: https://npmjs.com/package/ext-name
-[npm-downloads-src]: https://img.shields.io/npm/dm/ext-name?style=flat&colorA=18181B&colorB=14F195
-[npm-downloads-href]: https://npmjs.com/package/ext-name
-[bundle-src]: https://img.shields.io/bundlephobia/minzip/ext-name?style=flat&colorA=18181B&colorB=14F195
-[bundle-href]: https://bundlephobia.com/result?p=ext-name
-[license-src]: https://img.shields.io/github/license/nyxb/ext-name.svg?style=flat&colorA=18181B&colorB=14F195
-[license-href]: https://github.com/nyxb/ext-name/blob/main/LICENSE
+[npm-version-src]: https://img.shields.io/npm/v/@nyxb/eslint-config?style=flat&colorA=18181B&colorB=14F195
+[npm-version-href]: https://npmjs.com/package/@nyxb/eslint-config
+[npm-downloads-src]: https://img.shields.io/npm/dm/@nyxb/eslint-config?style=flat&colorA=18181B&colorB=14F195
+[npm-downloads-href]: https://npmjs.com/package@nyxb/eslint-config
+[license-src]: https://img.shields.io/github/license/nyxb/eslint-config.svg?style=flat&colorA=18181B&colorB=14F195
+[license-href]: https://github.com/nyxb/eslint-config/blob/main/LICENSE
