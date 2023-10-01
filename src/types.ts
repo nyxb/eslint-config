@@ -116,7 +116,7 @@ export interface OptionsConfig extends OptionsComponentExts {
    *
    * Passing an object to configure the options.
    *
-   * @see https://github.com/antfu/eslint-config-flat-gitignore
+   * @see https://github.com/nyxb/eslint-config-flat-gitignore
    * @default true
    */
   gitignore?: boolean | FlatGitignoreOptions

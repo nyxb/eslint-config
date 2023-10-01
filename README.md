@@ -44,9 +44,9 @@ With CJS:
 
 ```js
 // eslint.config.js
-const antfu = require('@antfu/eslint-config').default
+const nyxb = require('@nyxb/eslint-config').default
 
-module.exports = antfu()
+module.exports = nyxb()
 ```
 
 > Note that `.eslintignore` no longer works in Flat config, see [customization](#customization) for more details.
@@ -116,6 +116,102 @@ Add the following settings to your `settings.json`:
     "yaml"
   ]
 }
+```
+
+## 🎨 Customization
+
+Since v1.0, we migrated to [ESLint Flat config](https://eslint.org/docs/latest/use/configure/configuration-files-new). It provides much better organization and composition.
+
+Normally you only need to import the `nyxb` preset:
+
+```js
+// eslint.config.js
+import nyxb from '@nyxb/eslint-config'
+
+export default nyxb()
+```
+
+And that's it! Or you can configure each integration individually, for example:
+
+```js
+// eslint.config.js
+import nyxb from '@nyxb/eslint-config'
+
+export default nyxb({
+  stylistic: true, // enable stylistic formatting rules
+  typescript: true,
+  vue: true,
+  jsonc: false, // disable jsonc support
+  yaml: false,
+
+  // `.eslintignore` is no longer supported in Flat config, use `ignores` instead
+  ignores: [
+    './fixtures',
+    // ...globs
+  ]
+})
+```
+
+The `nyxb` factory function also accepts any number of arbitrary custom config overrides:
+
+```js
+// eslint.config.js
+import nyxb from '@nyxb/eslint-config'
+
+export default nyxb(
+  {
+    // Configures for nyxb's config
+  },
+
+  // From the second arguments they are ESLint Flat Configs
+  // you can have multiple configs
+  {
+    files: ['**/*.ts'],
+    rules: {},
+  },
+  {
+    rules: {},
+  },
+)
+```
+
+Going more advanced, you can also import fine-grained configs and compose them as you wish:
+
+```js
+// eslint.config.js
+import {
+  comments,
+  ignores,
+  imports,
+  javascript,
+  jsdoc,
+  jsonc,
+  markdown,
+  node,
+  sortPackageJson,
+  sortTsconfig,
+  stylistic,
+  typescript,
+  unicorn,
+  vue,
+  yml,
+} from '@nyxb/eslint-config'
+
+export default [
+  ...ignores(),
+  ...javascript(),
+  ...comments(),
+  ...node(),
+  ...jsdoc(),
+  ...imports(),
+  ...unicorn(),
+  ...typescript(),
+  ...stylistic(),
+  ...vue(),
+  ...jsonc(),
+  ...yml(),
+  ...markdown(),
+]
 ```
 
 Check out the [configs](https://github.com/nyxb/eslint-config/blob/main/src/configs) and [factory](https://github.com/nyxb/eslint-config/blob/main/src/factory.ts) for more details.
