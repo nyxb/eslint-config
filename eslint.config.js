@@ -1,9 +1,13 @@
 import sortKeys from 'eslint-plugin-sort-keys'
 import styleMigrate from '@stylistic/eslint-plugin-migrate'
-import antfu from './dist/index.js'
+import nyxb from './dist/index.js'
 
-export default antfu(
+export default nyxb(
   {
+    react: true,
+    next: true,
+    vue: true,
+    typescript: true,
     ignores: [
       'fixtures',
       '_fixtures',
