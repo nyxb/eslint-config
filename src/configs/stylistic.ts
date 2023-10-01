@@ -10,11 +10,11 @@ export function stylistic(): FlatESLintConfigItem[] {
         style: pluginStylistic,
       },
       rules: {
+        'curly': ['error', 'multi-or-nest', 'consistent'],
         'nyxb/consistent-list-newline': 'error',
         'nyxb/if-newline': 'error',
-        'nyxb/top-level-function': 'error',
 
-        'curly': ['error', 'multi-or-nest', 'consistent'],
+        'nyxb/top-level-function': 'error',
         'style/array-bracket-spacing': ['error', 'never'],
 
         'style/arrow-spacing': ['error', { after: true, before: true }],
@@ -26,7 +26,7 @@ export function stylistic(): FlatESLintConfigItem[] {
         'style/computed-property-spacing': ['error', 'never', { enforceForClassMembers: true }],
         'style/dot-location': ['error', 'property'],
         'style/eol-last': 'error',
-        'style/indent': ['error', 2, {
+        'style/indent': ['error', 3, {
           ArrayExpression: 1,
           CallExpression: { arguments: 1 },
           FunctionDeclaration: { body: 1, parameters: 1 },
