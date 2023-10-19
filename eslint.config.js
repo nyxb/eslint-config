@@ -1,26 +1,18 @@
-import sortKeys from 'eslint-plugin-sort-keys'
+// @ts-check
 import styleMigrate from '@stylistic/eslint-plugin-migrate'
 import nyxb from './dist/index.js'
 
 export default nyxb(
   {
-    react: true,
-    next: true,
     vue: true,
     typescript: true,
     ignores: [
       'fixtures',
       '_fixtures',
     ],
-    // typescript: {
-    //   tsconfigPath: 'tsconfig.json',
-    // },
   },
   {
     files: ['src/**/*.ts'],
-    plugins: {
-      'sort-keys': sortKeys,
-    },
     rules: {
       'sort-keys/sort-keys-fix': 'error',
     },
