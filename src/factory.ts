@@ -2,7 +2,7 @@ import process from 'node:process'
 import fs from 'node:fs'
 import { isPackageExists } from 'local-pkg'
 import gitignore from 'eslint-config-flat-gitignore'
-import type { FlatESLintConfigItem, OptionsConfig } from './types'
+import type { ConfigItem, OptionsConfig } from './types'
 import {
    comments,
    ignores,
@@ -12,6 +12,7 @@ import {
    jsonc,
    markdown,
    node,
+   sortKeys,
    sortPackageJson,
    sortTsconfig,
    stylistic,
@@ -19,11 +20,13 @@ import {
    typescript,
    unicorn,
    vue,
+   next,
+   react,
    yaml,
 } from './configs'
 import { combine } from './utils'
 
-const flatConfigProps: (keyof FlatESLintConfigItem)[] = [
+const flatConfigProps: (keyof ConfigItem)[] = [
    'files',
    'ignores',
    'languageOptions',
@@ -41,21 +44,38 @@ const VuePackages = [
    '@slidev/cli',
 ]
 
+const ReactPackages = [
+   'react',
+]
+
+const NextPackages = [
+   'next',
+]
+
 /**
  * Construct an array of ESLint flat config items.
  */
-export function nyxb(options: OptionsConfig & FlatESLintConfigItem = {}, ...userConfigs: (FlatESLintConfigItem | FlatESLintConfigItem[])[]) {
+export function nyxb(options: OptionsConfig & ConfigItem = {}, ...userConfigs: (ConfigItem | ConfigItem[])[]) {
    const {
       isInEditor = !!((process.env.VSCODE_PID || process.env.JETBRAINS_IDE) && !process.env.CI),
+      react: enableReact = ReactPackages.some(i => isPackageExists(i)),
+      next: enableNext = NextPackages.some(i => isPackageExists(i)),
       vue: enableVue = VuePackages.some(i => isPackageExists(i)),
       typescript: enableTypeScript = isPackageExists('typescript'),
-      stylistic: enableStylistic = true,
       gitignore: enableGitignore = true,
       overrides = {},
       componentExts = [],
    } = options
 
-   const configs: FlatESLintConfigItem[][] = []
+   const stylisticOptions = options.stylistic === false
+      ? false
+      : typeof options.stylistic === 'object'
+         ? options.stylistic
+         : {}
+   if (stylisticOptions && !('jsx' in stylisticOptions))
+      stylisticOptions.jsx = options.jsx ?? true
+
+   const configs: ConfigItem[][] = []
 
    if (enableGitignore) {
       if (typeof enableGitignore !== 'boolean') {
@@ -77,16 +97,25 @@ export function nyxb(options: OptionsConfig & FlatESLintConfigItem = {}, ...user
       comments(),
       node(),
       jsdoc({
-         stylistic: enableStylistic,
+         stylistic: stylisticOptions,
       }),
       imports({
-         stylistic: enableStylistic,
+         stylistic: stylisticOptions,
       }),
       unicorn(),
+
+      // Optional plugins (not enabled by default)
+      sortKeys(),
    )
 
    if (enableVue)
       componentExts.push('vue')
+
+   if (enableReact)
+      componentExts.push('jsx', 'tsx')
+
+   if (enableNext)
+      componentExts.push('jsx', 'tsx')
 
    if (enableTypeScript) {
       configs.push(typescript({
@@ -98,8 +127,8 @@ export function nyxb(options: OptionsConfig & FlatESLintConfigItem = {}, ...user
       }))
    }
 
-   if (enableStylistic)
-      configs.push(stylistic())
+   if (stylisticOptions)
+      configs.push(stylistic(stylisticOptions))
 
    if (options.test ?? true) {
       configs.push(test({
@@ -111,7 +140,23 @@ export function nyxb(options: OptionsConfig & FlatESLintConfigItem = {}, ...user
    if (enableVue) {
       configs.push(vue({
          overrides: overrides.vue,
-         stylistic: enableStylistic,
+         stylistic: stylisticOptions,
+         typescript: !!enableTypeScript,
+      }))
+   }
+
+   if (enableReact) {
+      configs.push(react({
+         overrides: overrides.react,
+         stylistic: stylisticOptions,
+         typescript: !!enableTypeScript,
+      }))
+   }
+
+   if (enableNext) {
+      configs.push(next({
+         overrides: overrides.next,
+         stylistic: stylisticOptions,
          typescript: !!enableTypeScript,
       }))
    }
@@ -120,7 +165,7 @@ export function nyxb(options: OptionsConfig & FlatESLintConfigItem = {}, ...user
       configs.push(
          jsonc({
             overrides: overrides.jsonc,
-            stylistic: enableStylistic,
+            stylistic: stylisticOptions,
          }),
          sortPackageJson(),
          sortTsconfig(),
@@ -130,7 +175,7 @@ export function nyxb(options: OptionsConfig & FlatESLintConfigItem = {}, ...user
    if (options.yaml ?? true) {
       configs.push(yaml({
          overrides: overrides.yaml,
-         stylistic: enableStylistic,
+         stylistic: stylisticOptions,
       }))
    }
 
@@ -147,7 +192,7 @@ export function nyxb(options: OptionsConfig & FlatESLintConfigItem = {}, ...user
       if (key in options)
          acc[key] = options[key] as any
       return acc
-   }, {} as FlatESLintConfigItem)
+   }, {} as ConfigItem)
    if (Object.keys(fusedConfig).length)
       configs.push([fusedConfig])
 
@@ -155,9 +200,6 @@ export function nyxb(options: OptionsConfig & FlatESLintConfigItem = {}, ...user
       ...configs,
       ...userConfigs,
    )
-
-   // recordRulesStateConfigs(merged)
-   // warnUnnecessaryOffRules()
 
    return merged
 }
