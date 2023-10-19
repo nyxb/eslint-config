@@ -3,7 +3,7 @@ import { afterAll, beforeAll, it } from 'vitest'
 import fs from 'fs-extra'
 import { execa } from 'execa'
 import fg from 'fast-glob'
-import type { FlatESLintConfigItem, OptionsConfig } from '../src/types'
+import type { ConfigItem, OptionsConfig } from '../src/types'
 
 beforeAll(async () => {
   await fs.rm('_fixtures', { recursive: true, force: true })
@@ -25,7 +25,16 @@ runWithConfig('no-style', {
   vue: true,
   stylistic: false,
 })
+runWithConfig('tab-double-quotes', {
+  typescript: true,
+  vue: true,
+  stylistic: {
+    indent: 'tab',
+    quotes: 'double',
+  },
+})
 
+// https://github.com/antfu/eslint-config/issues/255
 runWithConfig(
   'ts-override',
   {
@@ -38,7 +47,7 @@ runWithConfig(
   },
 )
 
-function runWithConfig(name: string, configs: OptionsConfig, ...items: FlatESLintConfigItem[]) {
+function runWithConfig(name: string, configs: OptionsConfig, ...items: ConfigItem[]) {
   it.concurrent(name, async ({ expect }) => {
     const from = resolve('fixtures/input')
     const output = resolve('fixtures/output', name)
@@ -51,9 +60,9 @@ function runWithConfig(name: string, configs: OptionsConfig, ...items: FlatESLin
     })
     await fs.writeFile(join(target, 'eslint.config.js'), `
 // @eslint-disable
-import nyxb from '@nyxb/eslint-config'
+import antfu from '@antfu/eslint-config'
 
-export default nyxb(
+export default antfu(
   ${JSON.stringify(configs)},
   ...${JSON.stringify(items) ?? []},
 )
@@ -61,7 +70,7 @@ export default nyxb(
 
     await execa('npx', ['eslint', '.', '--fix'], {
       cwd: target,
-      stdio: 'inherit',
+      stdio: 'pipe',
     })
 
     const files = await fg('**/*', {
