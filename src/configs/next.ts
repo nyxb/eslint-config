@@ -1,12 +1,11 @@
-import type { FlatESLintConfigItem, OptionsHasTypeScript, OptionsOverrides, OptionsStylistic } from '../types'
+import type { ConfigItem, OptionsHasTypeScript, OptionsOverrides, OptionsStylistic } from '../types'
 
-import { GLOB_REACT } from '../globs' // Ersetzt GLOB_REACT mit GLOB_NEXT für bessere Klarheit
+import { GLOB_REACT } from '../globs'  // Ersetzt GLOB_REACT mit GLOB_NEXT für bessere Klarheit
 import { parserTs, pluginNext } from '../plugins'
-import { OFF } from '../flags'
 
 export function next(
    options: OptionsHasTypeScript & OptionsOverrides & OptionsStylistic = {},
-): FlatESLintConfigItem[] {
+): ConfigItem[] {
    const {
       overrides = {},
       stylistic = true,
@@ -34,13 +33,13 @@ export function next(
          rules: {
             ...pluginNext.configs.recommended.rules as any,
 
-            'react/react-in-jsx-scope': OFF,
+            'react/react-in-jsx-scope': 'off',
 
             // Hier nach Bedarf weitere Next.js-spezifische Regeln hinzufügen
 
             ...stylistic
                ? {
-                     // Hier stilistische Regeln hinzufügen, ähnlich ich es in der Vue-Konfiguration getan haben
+                     // Hier stilistische Regeln hinzufügen, ähnlich wie im Vue-Codeblock
                   }
                : {},
 

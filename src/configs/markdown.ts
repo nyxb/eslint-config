@@ -1,88 +1,87 @@
-import type { FlatESLintConfigItem, OptionsComponentExts, OptionsOverrides } from '../types'
+import type { ConfigItem, OptionsComponentExts, OptionsOverrides } from '../types'
 import { GLOB_MARKDOWN, GLOB_MARKDOWN_CODE } from '../globs'
 import { pluginMarkdown } from '../plugins'
-import { OFF } from '../flags'
 
-export function markdown(options: OptionsComponentExts & OptionsOverrides = {}): FlatESLintConfigItem[] {
-  const {
-    componentExts = [],
-    overrides = {},
-  } = options
+export function markdown(options: OptionsComponentExts & OptionsOverrides = {}): ConfigItem[] {
+   const {
+      componentExts = [],
+      overrides = {},
+   } = options
 
-  return [
-    {
-      name: 'nyxb:markdown:setup',
-      plugins: {
-        markdown: pluginMarkdown,
+   return [
+      {
+         name: 'nyxb:markdown:setup',
+         plugins: {
+            markdown: pluginMarkdown,
+         },
       },
-    },
-    {
-      files: [GLOB_MARKDOWN],
-      name: 'nyxb:markdown:processor',
-      processor: 'markdown/markdown',
-    },
-    {
-      files: [
-        GLOB_MARKDOWN_CODE,
-        ...componentExts.map(ext => `${GLOB_MARKDOWN}/**/*.${ext}`),
-      ],
-      languageOptions: {
-        parserOptions: {
-          ecmaFeatures: {
-            impliedStrict: true,
-          },
-        },
+      {
+         files: [GLOB_MARKDOWN],
+         name: 'nyxb:markdown:processor',
+         processor: 'markdown/markdown',
       },
-      name: 'nyxb:markdown:rules',
-      rules: {
-        'nyxb/no-cjs-exports': OFF,
-        'nyxb/no-ts-export-equal': OFF,
+      {
+         files: [
+            GLOB_MARKDOWN_CODE,
+            ...componentExts.map(ext => `${GLOB_MARKDOWN}/**/*.${ext}`),
+         ],
+         languageOptions: {
+            parserOptions: {
+               ecmaFeatures: {
+                  impliedStrict: true,
+               },
+            },
+         },
+         name: 'nyxb:markdown:rules',
+         rules: {
+            'no-alert': 'off',
+            'no-console': 'off',
 
-        'no-alert': OFF,
-        'no-console': OFF,
-        'no-undef': OFF,
-        'no-unused-expressions': OFF,
-        'no-unused-vars': OFF,
+            'no-undef': 'off',
+            'no-unused-expressions': 'off',
+            'no-unused-vars': 'off',
+            'node/prefer-global/process': 'off',
+            'nyxb/no-cjs-exports': 'off',
 
-        'node/prefer-global/process': OFF,
+            'nyxb/no-ts-export-equal': 'off',
 
-        'style/comma-dangle': OFF,
-        'style/eol-last': OFF,
+            'style/comma-dangle': 'off',
+            'style/eol-last': 'off',
 
-        'ts/consistent-type-imports': OFF,
-        'ts/no-namespace': OFF,
-        'ts/no-redeclare': OFF,
-        'ts/no-require-imports': OFF,
-        'ts/no-unused-vars': OFF,
-        'ts/no-use-before-define': OFF,
-        'ts/no-var-requires': OFF,
+            'ts/consistent-type-imports': 'off',
+            'ts/no-namespace': 'off',
+            'ts/no-redeclare': 'off',
+            'ts/no-require-imports': 'off',
+            'ts/no-unused-vars': 'off',
+            'ts/no-use-before-define': 'off',
+            'ts/no-var-requires': 'off',
 
-        'unicode-bom': 'off',
-        'unused-imports/no-unused-imports': OFF,
-        'unused-imports/no-unused-vars': OFF,
+            'unicode-bom': 'off',
+            'unused-imports/no-unused-imports': 'off',
+            'unused-imports/no-unused-vars': 'off',
 
-        // Type aware rules
-        ...{
-          'ts/await-thenable': OFF,
-          'ts/dot-notation': OFF,
-          'ts/no-floating-promises': OFF,
-          'ts/no-for-in-array': OFF,
-          'ts/no-implied-eval': OFF,
-          'ts/no-misused-promises': OFF,
-          'ts/no-throw-literal': OFF,
-          'ts/no-unnecessary-type-assertion': OFF,
-          'ts/no-unsafe-argument': OFF,
-          'ts/no-unsafe-assignment': OFF,
-          'ts/no-unsafe-call': OFF,
-          'ts/no-unsafe-member-access': OFF,
-          'ts/no-unsafe-return': OFF,
-          'ts/restrict-plus-operands': OFF,
-          'ts/restrict-template-expressions': OFF,
-          'ts/unbound-method': OFF,
-        },
+            // Type aware rules
+            ...{
+               'ts/await-thenable': 'off',
+               'ts/dot-notation': 'off',
+               'ts/no-floating-promises': 'off',
+               'ts/no-for-in-array': 'off',
+               'ts/no-implied-eval': 'off',
+               'ts/no-misused-promises': 'off',
+               'ts/no-throw-literal': 'off',
+               'ts/no-unnecessary-type-assertion': 'off',
+               'ts/no-unsafe-argument': 'off',
+               'ts/no-unsafe-assignment': 'off',
+               'ts/no-unsafe-call': 'off',
+               'ts/no-unsafe-member-access': 'off',
+               'ts/no-unsafe-return': 'off',
+               'ts/restrict-plus-operands': 'off',
+               'ts/restrict-template-expressions': 'off',
+               'ts/unbound-method': 'off',
+            },
 
-        ...overrides,
+            ...overrides,
+         },
       },
-    },
-  ]
+   ]
 }
