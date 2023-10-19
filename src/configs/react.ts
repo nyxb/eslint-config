@@ -1,11 +1,10 @@
-import type { FlatESLintConfigItem, OptionsHasTypeScript, OptionsOverrides, OptionsStylistic } from '../types'
+import type { ConfigItem, OptionsHasTypeScript, OptionsOverrides, OptionsStylistic } from '../types'
 import { GLOB_REACT } from '../globs'
 import { parserTs, pluginReact } from '../plugins'
-import { OFF } from '../flags'
 
 export function react(
    options: OptionsHasTypeScript & OptionsOverrides & OptionsStylistic = {},
-): FlatESLintConfigItem[] {
+): ConfigItem[] {
    const {
       overrides = {},
       stylistic = true,
@@ -35,7 +34,7 @@ export function react(
             'jsx-quotes': ['error', 'prefer-single'],
             'react/jsx-uses-react': 'error',
             'react/jsx-uses-vars': 'error',
-            'react/react-in-jsx-scope': OFF,
+            'react/react-in-jsx-scope': 'off',
 
             ...stylistic
                ? {
