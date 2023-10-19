@@ -48,7 +48,9 @@ export function vue(
                order: ['script', 'template', 'style'],
             }],
             'vue/component-name-in-template-casing': ['error', 'PascalCase'],
-            'vue/component-options-name-casing': ['error', 'PascalCase'],
+            'vue/component-options-name-casing': ['error', 'PascalCase', {
+               "registeredComponentsOnly": false,
+            }],
             'vue/custom-event-name-casing': ['error', 'camelCase'],
             'vue/define-macros-order': ['error', {
                order: ['defineOptions', 'defineProps', 'defineEmits', 'defineSlots'],
