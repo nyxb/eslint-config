@@ -11,7 +11,9 @@ import {
    jsdoc,
    jsonc,
    markdown,
+   next,
    node,
+   react,
    sortKeys,
    sortPackageJson,
    sortTsconfig,
@@ -20,8 +22,6 @@ import {
    typescript,
    unicorn,
    vue,
-   next,
-   react,
    yaml,
 } from './configs'
 import { combine } from './utils'

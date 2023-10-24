@@ -135,17 +135,17 @@ And that's it! Or you can configure each integration individually, for example:
 import nyxb from '@nyxb/eslint-config'
 
 export default nyxb({
-  stylistic: true, // enable stylistic formatting rules
-  typescript: true,
-  vue: true,
-  jsonc: false, // disable jsonc support
-  yaml: false,
+   stylistic: true, // enable stylistic formatting rules
+   typescript: true,
+   vue: true,
+   jsonc: false, // disable jsonc support
+   yaml: false,
 
-  // `.eslintignore` is no longer supported in Flat config, use `ignores` instead
-  ignores: [
-    './fixtures',
-    // ...globs
-  ]
+   // `.eslintignore` is no longer supported in Flat config, use `ignores` instead
+   ignores: [
+      './fixtures',
+      // ...globs
+   ]
 })
 ```
 
@@ -156,19 +156,19 @@ The `nyxb` factory function also accepts any number of arbitrary custom config o
 import nyxb from '@nyxb/eslint-config'
 
 export default nyxb(
-  {
-    // Configures for nyxb's config
-  },
+   {
+      // Configures for nyxb's config
+   },
 
-  // From the second arguments they are ESLint Flat Configs
-  // you can have multiple configs
-  {
-    files: ['**/*.ts'],
-    rules: {},
-  },
-  {
-    rules: {},
-  },
+   // From the second arguments they are ESLint Flat Configs
+   // you can have multiple configs
+   {
+      files: ['**/*.ts'],
+      rules: {},
+   },
+   {
+      rules: {},
+   },
 )
 ```
 
@@ -177,37 +177,37 @@ Going more advanced, you can also import fine-grained configs and compose them a
 ```js
 // eslint.config.js
 import {
-  comments,
-  ignores,
-  imports,
-  javascript,
-  jsdoc,
-  jsonc,
-  markdown,
-  node,
-  sortPackageJson,
-  sortTsconfig,
-  stylistic,
-  typescript,
-  unicorn,
-  vue,
-  yml,
+   comments,
+   ignores,
+   imports,
+   javascript,
+   jsdoc,
+   jsonc,
+   markdown,
+   node,
+   sortPackageJson,
+   sortTsconfig,
+   stylistic,
+   typescript,
+   unicorn,
+   vue,
+   yml,
 } from '@nyxb/eslint-config'
 
 export default [
-  ...ignores(),
-  ...javascript(),
-  ...comments(),
-  ...node(),
-  ...jsdoc(),
-  ...imports(),
-  ...unicorn(),
-  ...typescript(),
-  ...stylistic(),
-  ...vue(),
-  ...jsonc(),
-  ...yml(),
-  ...markdown(),
+   ...ignores(),
+   ...javascript(),
+   ...comments(),
+   ...node(),
+   ...jsdoc(),
+   ...imports(),
+   ...unicorn(),
+   ...typescript(),
+   ...stylistic(),
+   ...vue(),
+   ...jsonc(),
+   ...yml(),
+   ...markdown(),
 ]
 ```
 
@@ -235,6 +235,75 @@ When you want to overrides rules, or disable them inline, you need to update to 
 type foo = { bar: 2 }
 ```
 
+### Optional Rules
+
+This config also provides some optional plugins/rules for extended usages.
+
+#### `sort-keys`
+
+This plugin [`eslint-plugin-sort-keys`](https://github.com/namnm/eslint-plugin-sort-keys) allows you to keep object keys sorted with auto-fix.
+
+It's installed but no rules are enabled by default. 
+
+It's recommended to opt-in on each file individually using [configuration comments](https://eslint.org/docs/latest/use/configure/rules#using-configuration-comments-1).
+
+```js
+/* eslint sort-keys/sort-keys-fix: "error" */
+const objectWantedToSort = {
+   a: 2,
+   b: 1,
+   c: 3,
+}
+/* eslint sort-keys/sort-keys-fix: "off" */
+```
+
+
+### Rules Overrides
+
+Certain rules would only be enabled in specific files, for example, `ts/*` rules would only be enabled in `.ts` files and `vue/*` rules would only be enabled in `.vue` files. If you want to override the rules, you need to specify the file extension:
+
+```js
+// eslint.config.js
+import nyxb from '@nyxb/eslint-config'
+
+export default nyxb(
+   { vue: true, typescript: true },
+   {
+      // Remember to specify the file glob here, otherwise it might cause the vue plugin to handle non-vue files
+      files: ['**/*.vue'],
+      rules: {
+         'vue/operator-linebreak': ['error', 'before'],
+      },
+   },
+   {
+      // Without `files`, they are general rules for all files
+      rules: {
+         'style/semi': ['error', 'never'],
+      },
+   }
+)
+```
+
+We also provided an `overrides` options to make it easier:
+
+```js
+// eslint.config.js
+import nyxb from '@nyxb/eslint-config'
+
+export default nyxb({
+   overrides: {
+      vue: {
+         'vue/operator-linebreak': ['error', 'before'],
+      },
+      typescript: {
+         'ts/consistent-type-definitions': ['error', 'interface'],
+      },
+      yaml: {},
+      // ...
+   }
+})
+```
+
 
 ### 🚀 Type Aware Rules
 
@@ -247,9 +316,9 @@ You can optionally enable the [type aware rules](https://typescript-eslint.io/li
 import nyxb from '@nyxb/eslint-config'
 
 export default nyxb({
-  typescript: {
-    tsconfigPath: 'tsconfig.json',
-  },
+   typescript: {
+      tsconfigPath: 'tsconfig.json',
+   },
 })
 ```
 
