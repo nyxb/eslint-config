@@ -21,7 +21,7 @@
     "dev": "tsup src/index.ts --format esm,cjs --watch & eslint-flat-config-viewer",
     "lint": "pnpm run stub && eslint .",
     "prepack": "nyxr build",
-    "release": "bumpp && pnpm publish",
+    "release": "bumping && pnpm publish",
     "test": "vitest",
     "typecheck": "tsc --noEmit"
   },
@@ -63,7 +63,7 @@
     "@types/eslint": "^8.44.4",
     "@types/fs-extra": "^11.0.2",
     "@types/node": "^20.8.6",
-    "bumpp": "^9.2.0",
+    "bumping": "^9.2.1",
     "eslint": "^8.51.0",
     "eslint-flat-config-viewer": "^0.1.0",
     "esno": "^0.17.0",

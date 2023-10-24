@@ -105,9 +105,9 @@ importers:
       '@types/node':
         specifier: ^20.8.6
         version: 20.8.6
-      bumpp:
-        specifier: ^9.2.0
-        version: 9.2.0
+      bumping:
+        specifier: ^9.2.1
+        version: 9.2.1
       eslint:
         specifier: ^8.51.0
         version: 8.51.0
@@ -1571,8 +1571,8 @@ packages:
       semver: 7.5.4
     dev: false
 
-  /bumpp@9.2.0:
-    resolution: {integrity: sha512-pgp7y3jp33QTaXFVDrE0IKuZF5Y8EsIz+ywZXFALW2nD+ZD+4crxJe/GypBQBoJuZrr5dc6TGrR3wl7fk3+C6w==}
+  /bumping@9.2.1:
+    resolution: {integrity: sha512-dzh4aU92uaD0cAD7i7O0jlYYEJ3//SbwO2NhghNVR1V7rJeAo/g2oIgpsps2DLnRHTVqB0HFmiB+gEw1doUvzg==}
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
