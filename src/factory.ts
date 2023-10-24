@@ -11,9 +11,7 @@ import {
    jsdoc,
    jsonc,
    markdown,
-   next,
    node,
-   react,
    sortKeys,
    sortPackageJson,
    sortTsconfig,
@@ -44,22 +42,12 @@ const VuePackages = [
    '@slidev/cli',
 ]
 
-const ReactPackages = [
-   'react',
-]
-
-const NextPackages = [
-   'next',
-]
-
 /**
  * Construct an array of ESLint flat config items.
  */
 export function nyxb(options: OptionsConfig & ConfigItem = {}, ...userConfigs: (ConfigItem | ConfigItem[])[]) {
    const {
       isInEditor = !!((process.env.VSCODE_PID || process.env.JETBRAINS_IDE) && !process.env.CI),
-      react: enableReact = ReactPackages.some(i => isPackageExists(i)),
-      next: enableNext = NextPackages.some(i => isPackageExists(i)),
       vue: enableVue = VuePackages.some(i => isPackageExists(i)),
       typescript: enableTypeScript = isPackageExists('typescript'),
       gitignore: enableGitignore = true,
@@ -111,12 +99,6 @@ export function nyxb(options: OptionsConfig & ConfigItem = {}, ...userConfigs: (
    if (enableVue)
       componentExts.push('vue')
 
-   if (enableReact)
-      componentExts.push('jsx', 'tsx')
-
-   if (enableNext)
-      componentExts.push('jsx', 'tsx')
-
    if (enableTypeScript) {
       configs.push(typescript({
          ...typeof enableTypeScript !== 'boolean'
@@ -140,22 +122,6 @@ export function nyxb(options: OptionsConfig & ConfigItem = {}, ...userConfigs: (
    if (enableVue) {
       configs.push(vue({
          overrides: overrides.vue,
-         stylistic: stylisticOptions,
-         typescript: !!enableTypeScript,
-      }))
-   }
-
-   if (enableReact) {
-      configs.push(react({
-         overrides: overrides.react,
-         stylistic: stylisticOptions,
-         typescript: !!enableTypeScript,
-      }))
-   }
-
-   if (enableNext) {
-      configs.push(next({
-         overrides: overrides.next,
          stylistic: stylisticOptions,
          typescript: !!enableTypeScript,
       }))
