@@ -7,13 +7,13 @@ var log = console.log
 class Person {
   constructor(name, age) {
     this.name = name;
-    this.age = age;
+      this.age = age;
   }
 
-  // Define a method within the class
-  sayHello() {
-    log(`Hello, my name is ${this.name} and I am ${this.age} years old.`);
-  }
+// Define a method within the class
+sayHello() {
+  log(`Hello, my name is ${this.name} and I am ${this.age} years old.`);
+}
 }
 
 // Create an array of objects
