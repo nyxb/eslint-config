@@ -1,11 +1,9 @@
-[![cover][cover-src]][cover-href]
+# @nyxb/eslint-config
 
 [![npm version][npm-version-src]][npm-version-href] 
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![code style](https://nyxb.blog/badges/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
 [![License][license-src]][license-href]
-
-# @nyxb/eslint-config
 
 - ✨ Single quotes, no semi
 - 🛠️ Auto fix for formatting (aimed to be used standalone without Prettier)
@@ -18,15 +16,18 @@
 - 📖 Style principle: Minimal for reading, stable for diff
 - ⏩ Indentation: 3 spaces/tab (to end the eternal fight 2v4. 3 is the best)
 
-## 🚀 Usage
+> [!IMPORTANT]
+> The main branch is for v1.0-beta, which rewrites to the new [ESLint Flat config](https://eslint.org/docs/latest/use/configure/configuration-files-new).
 
-### 📥 Install
+## Usage
+
+### Install
 
 ```bash
-pnpm add -D eslint @nyxb/eslint-config
+pnpm i -D eslint @nyxb/eslint-config
 ```
 
-### ⚙️ Create config file
+### Create config file
 
 With [`"type": "module"`](https://nodejs.org/api/packages.html#type) in `package.json` (recommended):
 
@@ -48,7 +49,7 @@ module.exports = nyxb()
 
 > Note that `.eslintignore` no longer works in Flat config, see [customization](#customization) for more details.
 
-### ➕ Add script for package.json
+### Add script for package.json
 
 For example:
 
@@ -61,31 +62,30 @@ For example:
 }
 ```
 
-### ✨ Config VS Code auto fix
+## VS Code support (auto fix)
 
 Install [VS Code ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
 
-Add the following settings to your `settings.json`:
+Add the following settings to your `.vscode/settings.json`:
 
 ```jsonc
 {
-  // Enable the flat config support
+  // Enable the ESlint flat config support
   "eslint.experimental.useFlatConfig": true,
 
-  // Disable the default formatter
+  // Disable the default formatter, use eslint instead
   "prettier.enable": false,
   "editor.formatOnSave": false,
 
   // Auto fix
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true,
-    "source.organizeImports": false
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "never"
   },
 
   // Silent the stylistic rules in you IDE, but still auto fix them
   "eslint.rules.customizations": [
-    { "rule": "@stylistic/*", "severity": "off" },
-    { "rule": "style*", "severity": "off" },
+    { "rule": "style/*", "severity": "off" },
     { "rule": "*-indent", "severity": "off" },
     { "rule": "*-spacing", "severity": "off" },
     { "rule": "*-spaces", "severity": "off" },
@@ -96,10 +96,7 @@ Add the following settings to your `settings.json`:
     { "rule": "*semi", "severity": "off" }
   ],
 
-  // The following is optional.
-  // It's better to put under project setting `.vscode/settings.json`
-  // to avoid conflicts with working with different eslint configs
-  // that does not support all formats.
+  // Enable eslint for all supported languages
   "eslint.validate": [
     "javascript",
     "javascriptreact",
@@ -115,7 +112,7 @@ Add the following settings to your `settings.json`:
 }
 ```
 
-## 🎨 Customization
+## Customization
 
 Since v1.0, we migrated to [ESLint Flat config](https://eslint.org/docs/latest/use/configure/configuration-files-new). It provides much better organization and composition.
 
@@ -135,10 +132,21 @@ And that's it! Or you can configure each integration individually, for example:
 import nyxb from '@nyxb/eslint-config'
 
 export default nyxb({
-   stylistic: true, // enable stylistic formatting rules
+   // Enable stylistic formatting rules
+   // stylistic: true,
+
+   // Or customize the stylistic rules
+   stylistic: {
+      indent: 2, // 4, or 'tab'
+      quotes: 'single', // or 'double'
+   },
+
+   // TypeScript and Vue are auto-detected, you can also explicitly enable them:
    typescript: true,
    vue: true,
-   jsonc: false, // disable jsonc support
+
+   // Disable jsonc and yaml support
+   jsonc: false,
    yaml: false,
 
    // `.eslintignore` is no longer supported in Flat config, use `ignores` instead
@@ -174,6 +182,11 @@ export default nyxb(
 
 Going more advanced, you can also import fine-grained configs and compose them as you wish:
 
+<details>
+<summary>Advanced Example</summary>
+
+We don't recommend using this style in general usages, as there are shared options between configs and might need extra care to make them consistent.
+
 ```js
 // eslint.config.js
 import {
@@ -191,72 +204,53 @@ import {
    typescript,
    unicorn,
    vue,
-   yml,
+   yaml,
 } from '@nyxb/eslint-config'
 
 export default [
    ...ignores(),
-   ...javascript(),
+   ...javascript(/* Options */),
    ...comments(),
    ...node(),
    ...jsdoc(),
    ...imports(),
    ...unicorn(),
-   ...typescript(),
+   ...typescript(/* Options */),
    ...stylistic(),
    ...vue(),
    ...jsonc(),
-   ...yml(),
+   ...yaml(),
    ...markdown(),
 ]
 ```
 
+</details>
+
 Check out the [configs](https://github.com/nyxb/eslint-config/blob/main/src/configs) and [factory](https://github.com/nyxb/eslint-config/blob/main/src/factory.ts) for more details.
 
-### 🚀  Plugins Renaming
+> Thanks to [nyxb/eslint-config](https://github.com/nyxb/eslint-config) for the inspiration and reference.
+
+### Plugins Renaming
+
 Since flat config requires us to explicitly provide the plugin names (instead of mandatory convention from npm package name), we renamed some plugins to make overall scope more consistent and easier to write.
 
-| Original Prefix | New Prefix | Source Plugin |
-| --------------- | ---------- | ------------- |
-| `i/*` | `import/*` | [eslint-plugin-i](https://github.com/un-es/eslint-plugin-i) |
-| `n/*` | `node/*` | [eslint-plugin-n](https://github.com/eslint-community/eslint-plugin-n) |
-| `@typescript-eslint/*` | `ts/*` | [@typescript-eslint/eslint-plugin](https://github.com/typescript-eslint/typescript-eslint) |
-| `@stylistic/js/*` | `style/*` | [@stylistic/eslint-plugin-js](https://github.com/eslint-stylistic/eslint-stylistic) |
-| `@stylistic/ts/*` | `style-ts/*` | [@stylistic/eslint-plugin-ts](https://github.com/eslint-stylistic/eslint-stylistic) |
-| `@next/next/*` | `next/*` | [eslint-plugin-next](https://www.npmjs.com/package/eslint-plugin-next) |
+| New Prefix | Original Prefix | Source Plugin |
+| --- | --- | --- |
+| `import/*` | `i/*` | [eslint-plugin-i](https://github.com/un-es/eslint-plugin-i) |
+| `node/*` | `n/*` | [eslint-plugin-n](https://github.com/eslint-community/eslint-plugin-n) |
+| `yaml/*` | `yml/*` | [eslint-plugin-yml](https://github.com/ota-meshi/eslint-plugin-yml) |
+| `ts/*` | `@typescript-eslint/*` | [@typescript-eslint/eslint-plugin](https://github.com/typescript-eslint/typescript-eslint) |
+| `style/*` | `@stylistic/*` | [@stylistic/eslint-plugin](https://github.com/eslint-stylistic/eslint-stylistic) |
 | `test/*` | `vitest/*` | [eslint-plugin-vitest](https://github.com/veritem/eslint-plugin-vitest) |
 | `test/*` | `no-only-tests/*` | [eslint-plugin-no-only-tests](https://github.com/levibuzolic/eslint-plugin-no-only-tests) |
 
-When you want to overrides rules, or disable them inline, you need to update to the new prefix:
+When you want to override rules, or disable them inline, you need to update to the new prefix:
 
 ```diff
 -// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 +// eslint-disable-next-line ts/consistent-type-definitions
 type foo = { bar: 2 }
 ```
-
-### Optional Rules
-
-This config also provides some optional plugins/rules for extended usages.
-
-#### `sort-keys`
-
-This plugin [`eslint-plugin-sort-keys`](https://github.com/namnm/eslint-plugin-sort-keys) allows you to keep object keys sorted with auto-fix.
-
-It's installed but no rules are enabled by default. 
-
-It's recommended to opt-in on each file individually using [configuration comments](https://eslint.org/docs/latest/use/configure/rules#using-configuration-comments-1).
-
-```js
-/* eslint sort-keys/sort-keys-fix: "error" */
-const objectWantedToSort = {
-   a: 2,
-   b: 1,
-   c: 3,
-}
-/* eslint sort-keys/sort-keys-fix: "off" */
-```
-
 
 ### Rules Overrides
 
@@ -304,8 +298,27 @@ export default nyxb({
 })
 ```
 
+### Optional Rules
 
-### 🚀 Type Aware Rules
+This config also provides some optional plugins/rules for extended usages.
+
+#### `sort-keys`
+
+This plugin [`eslint-plugin-sort-keys`](https://github.com/namnm/eslint-plugin-sort-keys) allows you to keep object keys sorted with auto-fix.
+
+It's installed but no rules are enabled by default. 
+
+It's recommended to opt-in on each file individually using [configuration comments](https://eslint.org/docs/latest/use/configure/rules#using-configuration-comments-1).
+
+```js
+/* eslint sort-keys/sort-keys-fix: "error" */
+const objectWantedToSort = {
+   a: 2,
+   b: 1,
+   c: 3,
+}
+/* eslint sort-keys/sort-keys-fix: "off" */
+```
 
 ### Type Aware Rules
 
@@ -322,7 +335,7 @@ export default nyxb({
 })
 ```
 
-### 🚀 Lint Staged
+### Lint Staged
 
 If you want to apply lint and auto-fix before every commit, you can add the following to your `package.json`:
 
@@ -353,18 +366,18 @@ If you enjoy this code style, and would like to mention it in your project, here
 
 [![code style](https://nyxb.blog/badges/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
 
-## 📚 FAQ
+## FAQ
 
 ### 🦋 Prettier?
 
-[Why I don't use Prettier](https://dev.to/nyxb/prettier-a-double-edged-sword-for-code-formatting-29o9)
+[Why I don't use Prettier](https://nyxb.blog/en/tech-topics/a-double-edged-sword-for-code-formatting)
 
 ### 🔍 How to lint CSS?
 
 I use [styled-components](https://styled-components.com) and lint it with [stylelint](https://stylelint.io/) here is my [stylelint-config](https://github.com/nyxb/stylelint-config).
 
 ### 3 indent?
-[Why 3 indent is the best](https://dev.to/nyxb/welcome-to-the-magical-world-of-indentation-1fc)
+[Why 3 indent is the best](https://nyxb.blog/en/tech-topics/the-magical-world-of-indentation)
 
 ### 😍 I prefer XXX...
 
@@ -372,25 +385,12 @@ Sure, you can config and override rules locally in your project to fit your need
 
 Or you can always fork this repo and make your own.
 
-## 🔎 Check Also
+## Check Also
 
 - [nyxb/dotfiles](https://github.com/nyxb/dotfiles) - My dotfiles
 - [nyxb/vscode-settings](https://github.com/nyxb/vscode-settings) - My VS Code settings
+- [nyxb/starter](https://github.com/nyxb/starter) - My starter templates for all nice things
 
-## 📜 License
+## License
 
-[MIT](./LICENSE) 💚 License © 2023 [Dennis Ollhoff](https://github.com/nyxb)
-
-<!-- Background -->
-
-[cover-src]: https://raw.githubusercontent.com/nyxb/eslint-config/main/.github/assets/cover-github.png
-[cover-href]: https://reactchemy.com
-
-<!-- Badges -->
-
-[npm-version-src]: https://img.shields.io/npm/v/@nyxb/eslint-config?style=flat&colorA=18181B&colorB=14F195
-[npm-version-href]: https://npmjs.com/package/@nyxb/eslint-config
-[npm-downloads-src]: https://img.shields.io/npm/dm/@nyxb/eslint-config?style=flat&colorA=18181B&colorB=14F195
-[npm-downloads-href]: https://npmjs.com/package@nyxb/eslint-config
-[license-src]: https://img.shields.io/github/license/nyxb/eslint-config.svg?style=flat&colorA=18181B&colorB=14F195
-[license-href]: https://github.com/nyxb/eslint-config/blob/main/LICENSE
+[MIT](./LICENSE) License &copy; 2023-PRESENT [Dennis Ollhoff](https://github.com/nyxb)
