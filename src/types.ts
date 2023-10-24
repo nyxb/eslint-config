@@ -26,6 +26,7 @@ type StylisticMergedRules = MergeIntersection<
   EslintRules &
   Unprefix<ReactRules, 'react/'> &
   Unprefix<TypeScriptRules, '@typescript-eslint/'>
+  & { 'jsx-self-closing-comp': ReactRules['react/self-closing-comp'] }
 >
 
 type StylisticRules = Pick<StylisticMergedRules, keyof UnprefixedRuleOptions>
@@ -116,7 +117,7 @@ export interface OptionsConfig extends OptionsComponentExts {
     *
     * Passing an object to configure the options.
     *
-    * @see https://github.com/nyxb/eslint-config-flat-gitignore
+    * @see https://github.com/antfu/eslint-config-flat-gitignore
     * @default true
     */
    gitignore?: boolean | FlatGitignoreOptions
@@ -152,20 +153,6 @@ export interface OptionsConfig extends OptionsComponentExts {
     * @default auto-detect based on the dependencies
     */
    vue?: boolean
-
-   /**
-    * Enable React support.
-    *
-    * @default auto-detect based on the dependencies
-    */
-   react?: boolean
-
-   /**
-    * Enable Next support.
-    *
-    * @default auto-detect based on the dependencies
-    */
-   next?: boolean
 
    /**
     * Enable JSONC support.
@@ -209,8 +196,6 @@ export interface OptionsConfig extends OptionsComponentExts {
       typescript?: ConfigItem['rules']
       test?: ConfigItem['rules']
       vue?: ConfigItem['rules']
-      react?: ConfigItem['rules']
-      next?: ConfigItem['rules']
       jsonc?: ConfigItem['rules']
       markdown?: ConfigItem['rules']
       yaml?: ConfigItem['rules']
