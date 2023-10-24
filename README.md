@@ -1,9 +1,7 @@
 # @nyxb/eslint-config
 
-[![npm version][npm-version-src]][npm-version-href] 
-[![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![code style](https://nyxb.blog/badges/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
-[![License][license-src]][license-href]
+
 
 - ✨ Single quotes, no semi
 - 🛠️ Auto fix for formatting (aimed to be used standalone without Prettier)
