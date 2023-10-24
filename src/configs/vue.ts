@@ -11,7 +11,7 @@ export function vue(
    } = options
 
    const {
-      indent = 2,
+      indent = 3,
    } = typeof stylistic === 'boolean' ? {} : stylistic
 
    return [
@@ -50,9 +50,7 @@ export function vue(
             'vue/component-name-in-template-casing': ['error', 'PascalCase', {
                registeredComponentsOnly: false,
             }],
-            'vue/component-options-name-casing': ['error', 'PascalCase', {
-               registeredComponentsOnly: false,
-            }],
+            'vue/component-options-name-casing': ['error', 'PascalCase'],
             'vue/custom-event-name-casing': ['error', 'camelCase'],
             'vue/define-macros-order': ['error', {
                order: ['defineOptions', 'defineProps', 'defineEmits', 'defineSlots'],
