@@ -5,27 +5,27 @@ const log = console.log
 
 // Define a class using ES6 class syntax
 class Person {
-  constructor(name, age) {
-    this.name = name
-    this.age = age
-  }
+   constructor(name, age) {
+      this.name = name
+      this.age = age
+   }
 
-  // Define a method within the class
-  sayHello() {
-    log(`Hello, my name is ${this.name} and I am ${this.age} years old.`)
-  }
+   // Define a method within the class
+   sayHello() {
+      log(`Hello, my name is ${this.name} and I am ${this.age} years old.`)
+   }
 }
 
 // Create an array of objects
 const people = [
-  new Person('Alice', 30),
-  new Person('Bob', 25),
-  new Person('Charlie', 35),
+   new Person('Alice', 30),
+   new Person('Bob', 25),
+   new Person('Charlie', 35),
 ]
 
 // Use the forEach method to iterate over the array
 people.forEach((person) => {
-  person.sayHello()
+   person.sayHello()
 })
 
 // Use a template literal to create a multiline string
@@ -45,11 +45,11 @@ log(newNumbers)
 
 // Use a try-catch block for error handling
 try {
-  // Attempt to parse an invalid JSON string
-  JSON.parse('invalid JSON')
+   // Attempt to parse an invalid JSON string
+   JSON.parse('invalid JSON')
 }
 catch (error) {
-  console.error('Error parsing JSON:', error.message)
+   console.error('Error parsing JSON:', error.message)
 }
 
 // Use a ternary conditional operator
@@ -59,5 +59,5 @@ log(`${number} is ${isEven(number) ? 'even' : 'odd'}.`)
 
 // Use a callback function with setTimeout for asynchronous code
 setTimeout(() => {
-  log('This code runs after a delay of 2 seconds.')
+   log('This code runs after a delay of 2 seconds.')
 }, 2000)
