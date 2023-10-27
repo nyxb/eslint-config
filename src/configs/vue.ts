@@ -48,6 +48,7 @@ export function vue(
                order: ['script', 'template', 'style'],
             }],
             'vue/component-name-in-template-casing': ['error', 'PascalCase', {
+               ignores: ['component'],
                registeredComponentsOnly: false,
             }],
             'vue/component-options-name-casing': ['error', 'PascalCase'],
