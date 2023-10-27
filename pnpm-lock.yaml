@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@next/eslint-plugin-next':
+        specifier: ^14.0.0
+        version: 14.0.0
       '@nyxb/eslint-define-config':
         specifier: ^1.24.1-1
         version: 1.24.1-1
@@ -45,8 +48,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0
       eslint-plugin-nyxb:
-        specifier: ^1.0.0-beta.6
-        version: 1.0.0-beta.6(eslint@8.52.0)(typescript@5.2.2)
+        specifier: ^1.0.0-beta.7
+        version: 1.0.0-beta.7(eslint@8.52.0)(typescript@5.2.2)
       eslint-plugin-sort-keys:
         specifier: ^2.3.5
         version: 2.3.5
@@ -843,6 +846,12 @@ packages:
       string-argv: 0.3.2
       type-detect: 4.0.8
     dev: true
+
+  /@next/eslint-plugin-next@14.0.0:
+    resolution: {integrity: sha512-Ye37nNI09V3yt7pzuzSQtwlvuJ2CGzFszHXkcTHHZgNr7EhTMFLipn3VSJChy+e5+ahTdNApPphc3qCPUsn10A==}
+    dependencies:
+      glob: 7.1.7
+    dev: false
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -2184,8 +2193,8 @@ packages:
     engines: {node: '>=5.0.0'}
     dev: false
 
-  /eslint-plugin-nyxb@1.0.0-beta.6(eslint@8.52.0)(typescript@5.2.2):
-    resolution: {integrity: sha512-+RAaF7NcYIAVaAs/RGsOj4RC+wW7sRnVGc6kNmKFugbnvPjJXZbtwQNf0aaTHbZOy2Md9HM3+RffrEKa2x956w==}
+  /eslint-plugin-nyxb@1.0.0-beta.7(eslint@8.52.0)(typescript@5.2.2):
+    resolution: {integrity: sha512-m4dU4MXkYFxKxOshQA9U2SQK18yUGWbVHxVq9mA1ImsL8sIt6M8TBRKyBgcvvPS4sGrRBByuzQW7K/HrGgECiQ==}
     peerDependencies:
       eslint: '*'
     dependencies:
@@ -2662,6 +2671,17 @@ packages:
       once: 1.4.0
       path-is-absolute: 1.0.1
     dev: true
+
+  /glob@7.1.7:
+    resolution: {integrity: sha512-OvD9ENzPLbegENnYP5UUfJIirTg4+XwMWGaQfQTY0JenxNvvIKP3U3/tAQSPIu/lHxXYSZmpXlUHeqAIdKzBLQ==}
+    dependencies:
+      fs.realpath: 1.0.0
+      inflight: 1.0.6
+      inherits: 2.0.4
+      minimatch: 3.1.2
+      once: 1.4.0
+      path-is-absolute: 1.0.1
+    dev: false
 
   /glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}

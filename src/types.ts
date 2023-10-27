@@ -155,6 +155,13 @@ export interface OptionsConfig extends OptionsComponentExts {
    vue?: boolean
 
    /**
+    * Enable Next support.
+    *
+    * @default auto-detect based on the dependencies
+    */
+   next?: boolean
+
+   /**
     * Enable JSONC support.
     *
     * @default true
@@ -196,6 +203,7 @@ export interface OptionsConfig extends OptionsComponentExts {
       typescript?: ConfigItem['rules']
       test?: ConfigItem['rules']
       vue?: ConfigItem['rules']
+      next?: ConfigItem['rules']
       jsonc?: ConfigItem['rules']
       markdown?: ConfigItem['rules']
       yaml?: ConfigItem['rules']

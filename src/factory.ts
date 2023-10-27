@@ -35,6 +35,12 @@ const flatConfigProps: (keyof ConfigItem)[] = [
    'settings',
 ]
 
+const NextPackages = [
+   'next',
+   'react',
+   'react-dom',
+]
+
 const VuePackages = [
    'vue',
    'nuxt',
@@ -49,6 +55,7 @@ export function nyxb(options: OptionsConfig & ConfigItem = {}, ...userConfigs: (
    const {
       isInEditor = !!((process.env.VSCODE_PID || process.env.JETBRAINS_IDE) && !process.env.CI),
       vue: enableVue = VuePackages.some(i => isPackageExists(i)),
+      next: enableNext = NextPackages.some(i => isPackageExists(i)),
       typescript: enableTypeScript = isPackageExists('typescript'),
       gitignore: enableGitignore = true,
       overrides = {},
@@ -99,6 +106,9 @@ export function nyxb(options: OptionsConfig & ConfigItem = {}, ...userConfigs: (
    if (enableVue)
       componentExts.push('vue')
 
+   if (enableNext)
+      componentExts.push('next')
+
    if (enableTypeScript) {
       configs.push(typescript({
          ...typeof enableTypeScript !== 'boolean'
@@ -122,6 +132,14 @@ export function nyxb(options: OptionsConfig & ConfigItem = {}, ...userConfigs: (
    if (enableVue) {
       configs.push(vue({
          overrides: overrides.vue,
+         stylistic: stylisticOptions,
+         typescript: !!enableTypeScript,
+      }))
+   }
+
+   if (enableNext) {
+      configs.push(vue({
+         overrides: overrides.next,
          stylistic: stylisticOptions,
          typescript: !!enableTypeScript,
       }))
