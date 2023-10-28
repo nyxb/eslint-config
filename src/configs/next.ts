@@ -19,9 +19,9 @@ export function next(
       {
          name: 'nyxb:next:setup',
          plugins: {
-            'next': pluginNext,
-            'react': pluginReact,
-            'react-hooks': pluginReactHooks,
+            next: pluginNext,
+            react: pluginReact,
+            reactHooks: pluginReactHooks,
          },
       },
       {
