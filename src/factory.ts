@@ -11,6 +11,7 @@ import {
    jsdoc,
    jsonc,
    markdown,
+   next,
    node,
    sortKeys,
    sortPackageJson,
@@ -138,7 +139,7 @@ export function nyxb(options: OptionsConfig & ConfigItem = {}, ...userConfigs: (
    }
 
    if (enableNext) {
-      configs.push(vue({
+      configs.push(next({
          overrides: overrides.next,
          stylistic: stylisticOptions,
          typescript: !!enableTypeScript,
