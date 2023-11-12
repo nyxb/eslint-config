@@ -19,7 +19,7 @@ export { default as pluginReactHooks } from 'eslint-plugin-react-hooks'
 export * as pluginYaml from 'eslint-plugin-yml'
 export { default as pluginNoOnlyTests } from 'eslint-plugin-no-only-tests'
 export { default as pluginVitest } from 'eslint-plugin-vitest'
-export { default as pluginSortKeys } from 'eslint-plugin-sort-keys'
+export { default as pluginPerfectionist } from 'eslint-plugin-perfectionist'
 
 export * as parserTs from '@typescript-eslint/parser'
 export { default as parserVue } from 'vue-eslint-parser'
