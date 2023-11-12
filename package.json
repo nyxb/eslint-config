@@ -52,6 +52,7 @@
     "eslint-plugin-n": "^16.2.0",
     "eslint-plugin-no-only-tests": "^3.1.0",
     "eslint-plugin-nyxb": "^1.0.0-beta.7",
+    "eslint-plugin-perfectionist": "^2.2.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-sort-keys": "^2.3.5",
@@ -63,8 +64,10 @@
     "globals": "^13.23.0",
     "jsonc-eslint-parser": "^2.3.0",
     "local-pkg": "^0.5.0",
+    "prompts": "^2.4.2",
     "vue-eslint-parser": "^9.3.2",
-    "yaml-eslint-parser": "^1.2.2"
+    "yaml-eslint-parser": "^1.2.2",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@nyxb/eslint-config": "workspace:*",
@@ -73,6 +76,8 @@
     "@types/eslint": "^8.44.6",
     "@types/fs-extra": "^11.0.3",
     "@types/node": "^20.8.7",
+    "@types/prompts": "^2.4.8",
+    "@types/yargs": "^17.0.31",
     "bumping": "^9.2.1",
     "eslint": "^8.52.0",
     "eslint-flat-config-viewer": "^0.1.0",
