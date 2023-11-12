@@ -1,5 +1,8 @@
 name: Release
 
+permissions:
+  contents: write
+
 on:
   push:
     tags:
@@ -12,11 +15,18 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
-      - uses: actions/setup-node@v3
+      - name: Set node
+        uses: actions/setup-node@v3
         with:
+          registry-url: https://registry.npmjs.org/
           node-version: 16.x
 
-      - run: npx changelogithub
+      - name: Setup
+        run: npm i -g @nyxb/nyxi
+
+      - name: Install
+        run: nyxci
+
+      - run: npx github-craftchangelogs
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
