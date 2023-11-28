@@ -29,7 +29,7 @@
     "stub": "tsup --format esm",
     "dev": "tsup --format esm,cjs --watch & eslint-flat-config-viewer",
     "lint": "pnpm run stub && eslint .",
-    "prepack": "nr build",
+    "prepack": "nyxr build",
     "release": "bumping && pnpm publish",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
