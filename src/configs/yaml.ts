@@ -1,63 +1,72 @@
-import type { ConfigItem, OptionsOverrides, OptionsStylistic } from '../types'
+import type { FlatConfigItem, OptionsFiles, OptionsOverrides, OptionsStylistic } from '../types'
 import { GLOB_YAML } from '../globs'
-import { parserYaml, pluginYaml } from '../plugins'
+import { interopDefault } from '../utils'
 
-export function yaml(
-  options: OptionsOverrides & OptionsStylistic = {},
-): ConfigItem[] {
-  const {
-    overrides = {},
-    stylistic = true,
-  } = options
+export async function yaml(
+   options: OptionsOverrides & OptionsStylistic & OptionsFiles = {},
+): Promise<FlatConfigItem[]> {
+   const {
+      files = [GLOB_YAML],
+      overrides = {},
+      stylistic = true,
+   } = options
 
-  const {
-    indent = 2,
-    quotes = 'single',
-  } = typeof stylistic === 'boolean' ? {} : stylistic
+   const {
+      indent = 2,
+      quotes = 'single',
+   } = typeof stylistic === 'boolean' ? {} : stylistic
 
-  return [
-    {
-      name: 'nyxb:yaml:setup',
-      plugins: {
-        yaml: pluginYaml as any,
+   const [
+      pluginYaml,
+      parserYaml,
+   ] = await Promise.all([
+      interopDefault(import('eslint-plugin-yml')),
+      interopDefault(import('yaml-eslint-parser')),
+   ] as const)
+
+   return [
+      {
+         name: 'nyxb:yaml:setup',
+         plugins: {
+            yaml: pluginYaml,
+         },
       },
-    },
-    {
-      files: [GLOB_YAML],
-      languageOptions: {
-        parser: parserYaml,
+      {
+         files,
+         languageOptions: {
+            parser: parserYaml,
+         },
+         name: 'nyxb:yaml:rules',
+         rules: {
+            'style/spaced-comment': 'off',
+
+            'yaml/block-mapping': 'error',
+            'yaml/block-sequence': 'error',
+            'yaml/no-empty-key': 'error',
+            'yaml/no-empty-sequence-entry': 'error',
+            'yaml/no-irregular-whitespace': 'error',
+            'yaml/plain-scalar': 'error',
+
+            'yaml/vue-custom-block/no-parsing-error': 'error',
+
+            ...stylistic
+               ? {
+                     'yaml/block-mapping-question-indicator-newline': 'error',
+                     'yaml/block-sequence-hyphen-indicator-newline': 'error',
+                     'yaml/flow-mapping-curly-newline': 'error',
+                     'yaml/flow-mapping-curly-spacing': 'error',
+                     'yaml/flow-sequence-bracket-newline': 'error',
+                     'yaml/flow-sequence-bracket-spacing': 'error',
+                     'yaml/indent': ['error', indent === 'tab' ? 2 : indent],
+                     'yaml/key-spacing': 'error',
+                     'yaml/no-tab-indent': 'error',
+                     'yaml/quotes': ['error', { avoidEscape: false, prefer: quotes }],
+                     'yaml/spaced-comment': 'error',
+                  }
+               : {},
+
+            ...overrides,
+         },
       },
-      name: 'nyxb:yaml:rules',
-      rules: {
-        'style/spaced-comment': 'off',
-
-        'yaml/block-mapping': 'error',
-        'yaml/block-sequence': 'error',
-        'yaml/no-empty-key': 'error',
-        'yaml/no-empty-sequence-entry': 'error',
-        'yaml/no-irregular-whitespace': 'error',
-        'yaml/plain-scalar': 'error',
-
-        'yaml/vue-custom-block/no-parsing-error': 'error',
-
-        ...stylistic
-          ? {
-              'yaml/block-mapping-question-indicator-newline': 'error',
-              'yaml/block-sequence-hyphen-indicator-newline': 'error',
-              'yaml/flow-mapping-curly-newline': 'error',
-              'yaml/flow-mapping-curly-spacing': 'error',
-              'yaml/flow-sequence-bracket-newline': 'error',
-              'yaml/flow-sequence-bracket-spacing': 'error',
-              'yaml/indent': ['error', indent === 'tab' ? 2 : indent],
-              'yaml/key-spacing': 'error',
-              'yaml/no-tab-indent': 'error',
-              'yaml/quotes': ['error', { avoidEscape: false, prefer: quotes }],
-              'yaml/spaced-comment': 'error',
-            }
-          : {},
-
-        ...overrides,
-      },
-    },
-  ]
+   ]
 }
