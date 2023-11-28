@@ -1,4 +1,4 @@
-import type { ConfigItem } from '../types'
+import type { FlatConfigItem } from '../types'
 import { pluginPerfectionist } from '../plugins'
 
 /**
@@ -6,13 +6,13 @@ import { pluginPerfectionist } from '../plugins'
  *
  * @see https://github.com/azat-io/eslint-plugin-perfectionist
  */
-export function perfectionist(): ConfigItem[] {
-  return [
-    {
-      name: 'nyxb:perfectionist',
-      plugins: {
-        perfectionist: pluginPerfectionist,
+export async function perfectionist(): Promise<FlatConfigItem[]> {
+   return [
+      {
+         name: 'nyxb:perfectionist',
+         plugins: {
+            perfectionist: pluginPerfectionist,
+         },
       },
-    },
-  ]
+   ]
 }
