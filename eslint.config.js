@@ -5,6 +5,7 @@ import nyxb from './dist/index.js'
 export default nyxb(
   {
     vue: true,
+    // react: true,
     typescript: true,
     ignores: [
       'fixtures',
