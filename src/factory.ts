@@ -3,188 +3,265 @@ import fs from 'node:fs'
 import { isPackageExists } from 'local-pkg'
 import type { Awaitable, FlatConfigItem, OptionsConfig, UserConfigItem } from './types'
 import {
-   comments,
-   ignores,
-   imports,
-   javascript,
-   jsdoc,
-   jsonc,
-   markdown,
-   node,
-   perfectionist,
-   react,
-   sortPackageJson,
-   sortTsconfig,
-   stylistic,
-   test,
-   typescript,
-   unicorn,
-   unocss,
-   vue,
-   yaml,
+  astro,
+  comments,
+  ignores,
+  imports,
+  javascript,
+  jsdoc,
+  jsonc,
+  markdown,
+  node,
+  perfectionist,
+  react,
+  sortPackageJson,
+  sortTsconfig,
+  stylistic,
+  svelte,
+  test,
+  toml,
+  typescript,
+  unicorn,
+  unocss,
+  vue,
+  yaml,
 } from './configs'
 import { combine, interopDefault } from './utils'
+import { formatters } from './configs/formatters'
 
 const flatConfigProps: (keyof FlatConfigItem)[] = [
-   'files',
-   'ignores',
-   'languageOptions',
-   'linterOptions',
-   'processor',
-   'plugins',
-   'rules',
-   'settings',
+  'name',
+  'files',
+  'ignores',
+  'languageOptions',
+  'linterOptions',
+  'processor',
+  'plugins',
+  'rules',
+  'settings',
 ]
 
 const VuePackages = [
-   'vue',
-   'nuxt',
-   'vitepress',
-   '@kolibry/cli',
+  'vue',
+  'nuxt',
+  'vitepress',
+  '@slidev/cli',
 ]
 
 /**
  * Construct an array of ESLint flat config items.
+ *
+ * @param {OptionsConfig & FlatConfigItem} options
+ *  The options for generating the ESLint configurations.
+ * @param {Awaitable<UserConfigItem | UserConfigItem[]>[]} userConfigs
+ *  The user configurations to be merged with the generated configurations.
+ * @returns {Promise<UserConfigItem[]>}
+ *  The merged ESLint configurations.
  */
 export async function nyxb(
-   options: OptionsConfig & FlatConfigItem = {},
-   ...userConfigs: Awaitable<UserConfigItem | UserConfigItem[]>[]
+  options: OptionsConfig & FlatConfigItem = {},
+  ...userConfigs: Awaitable<UserConfigItem | UserConfigItem[]>[]
 ): Promise<UserConfigItem[]> {
-   const {
-      componentExts = [],
-      gitignore: enableGitignore = true,
-      isInEditor = !!((process.env.VSCODE_PID || process.env.JETBRAINS_IDE) && !process.env.CI),
-      overrides = {},
-      react: enableReact = false,
-      typescript: enableTypeScript = isPackageExists('typescript'),
-      unocss: enableUnoCSS = false,
-      vue: enableVue = VuePackages.some(i => isPackageExists(i)),
-   } = options
+  const {
+    astro: enableAstro = false,
+    componentExts = [],
+    gitignore: enableGitignore = true,
+    isInEditor = !!((process.env.VSCODE_PID || process.env.VSCODE_CWD || process.env.JETBRAINS_IDE || process.env.VIM) && !process.env.CI),
+    react: enableReact = false,
+    svelte: enableSvelte = false,
+    typescript: enableTypeScript = isPackageExists('typescript'),
+    unocss: enableUnoCSS = false,
+    vue: enableVue = VuePackages.some(i => isPackageExists(i)),
+  } = options
 
-   const stylisticOptions = options.stylistic === false
-      ? false
-      : typeof options.stylistic === 'object'
-         ? options.stylistic
-         : {}
-   if (stylisticOptions && !('jsx' in stylisticOptions))
-      stylisticOptions.jsx = options.jsx ?? true
+  const stylisticOptions = options.stylistic === false
+    ? false
+    : typeof options.stylistic === 'object'
+      ? options.stylistic
+      : {}
 
-   const configs: Awaitable<FlatConfigItem[]>[] = []
+  if (stylisticOptions && !('jsx' in stylisticOptions))
+    stylisticOptions.jsx = options.jsx ?? true
 
-   if (enableGitignore) {
-      if (typeof enableGitignore !== 'boolean') {
-         configs.push(interopDefault(import('eslint-config-flat-gitignore')).then(r => [r(enableGitignore)]))
-      }
-      else {
-         if (fs.existsSync('.gitignore'))
-            configs.push(interopDefault(import('eslint-config-flat-gitignore')).then(r => [r()]))
-      }
-   }
+  const configs: Awaitable<FlatConfigItem[]>[] = []
 
-   // Base configs
-   configs.push(
-      ignores(),
-      javascript({
-         isInEditor,
-         overrides: overrides.javascript,
+  if (enableGitignore) {
+    if (typeof enableGitignore !== 'boolean') {
+      configs.push(interopDefault(import('eslint-config-flat-gitignore')).then(r => [r(enableGitignore)]))
+    }
+    else {
+      if (fs.existsSync('.gitignore'))
+        configs.push(interopDefault(import('eslint-config-flat-gitignore')).then(r => [r()]))
+    }
+  }
+
+  // Base configs
+  configs.push(
+    ignores(),
+    javascript({
+      isInEditor,
+      overrides: getOverrides(options, 'javascript'),
+    }),
+    comments(),
+    node(),
+    jsdoc({
+      stylistic: stylisticOptions,
+    }),
+    imports({
+      stylistic: stylisticOptions,
+    }),
+    unicorn(),
+
+    // Optional plugins (installed but not enabled by default)
+    perfectionist(),
+  )
+
+  if (enableVue)
+    componentExts.push('vue')
+
+  if (enableTypeScript) {
+    configs.push(typescript({
+      ...resolveSubOptions(options, 'typescript'),
+      componentExts,
+      overrides: getOverrides(options, 'typescript'),
+    }))
+  }
+
+  if (stylisticOptions) {
+    configs.push(stylistic({
+      ...stylisticOptions,
+      overrides: getOverrides(options, 'stylistic'),
+    }))
+  }
+
+  if (options.test ?? true) {
+    configs.push(test({
+      isInEditor,
+      overrides: getOverrides(options, 'test'),
+    }))
+  }
+
+  if (enableVue) {
+    configs.push(vue({
+      ...resolveSubOptions(options, 'vue'),
+      overrides: getOverrides(options, 'vue'),
+      stylistic: stylisticOptions,
+      typescript: !!enableTypeScript,
+    }))
+  }
+
+  if (enableReact) {
+    configs.push(react({
+      overrides: getOverrides(options, 'react'),
+      typescript: !!enableTypeScript,
+    }))
+  }
+
+  if (enableSvelte) {
+    configs.push(svelte({
+      overrides: getOverrides(options, 'svelte'),
+      stylistic: stylisticOptions,
+      typescript: !!enableTypeScript,
+    }))
+  }
+
+  if (enableUnoCSS) {
+    configs.push(unocss({
+      ...resolveSubOptions(options, 'unocss'),
+      overrides: getOverrides(options, 'unocss'),
+    }))
+  }
+
+  if (enableAstro) {
+    configs.push(astro({
+      overrides: getOverrides(options, 'astro'),
+      stylistic: stylisticOptions,
+    }))
+  }
+
+  if (options.jsonc ?? true) {
+    configs.push(
+      jsonc({
+        overrides: getOverrides(options, 'jsonc'),
+        stylistic: stylisticOptions,
       }),
-      comments(),
-      node(),
-      jsdoc({
-         stylistic: stylisticOptions,
-      }),
-      imports({
-         stylistic: stylisticOptions,
-      }),
-      unicorn(),
+      sortPackageJson(),
+      sortTsconfig(),
+    )
+  }
 
-      // Optional plugins (installed but not enabled by default)
-      perfectionist(),
-   )
+  if (options.yaml ?? true) {
+    configs.push(yaml({
+      overrides: getOverrides(options, 'yaml'),
+      stylistic: stylisticOptions,
+    }))
+  }
 
-   if (enableVue)
-      componentExts.push('vue')
+  if (options.toml ?? true) {
+    configs.push(toml({
+      overrides: getOverrides(options, 'toml'),
+      stylistic: stylisticOptions,
+    }))
+  }
 
-   if (enableTypeScript) {
-      configs.push(typescript({
-         ...typeof enableTypeScript !== 'boolean'
-            ? enableTypeScript
-            : {},
-         componentExts,
-         overrides: overrides.typescript,
-      }))
-   }
+  if (options.markdown ?? true) {
+    configs.push(
+      markdown(
+        {
+          componentExts,
+          overrides: getOverrides(options, 'markdown'),
+        },
+      ),
+    )
+  }
 
-   if (stylisticOptions)
-      configs.push(stylistic(stylisticOptions))
+  if (options.formatters) {
+    configs.push(formatters(
+      options.formatters,
+      typeof stylisticOptions === 'boolean' ? {} : stylisticOptions,
+    ))
+  }
 
-   if (options.test ?? true) {
-      configs.push(test({
-         isInEditor,
-         overrides: overrides.test,
-      }))
-   }
+  // User can optionally pass a flat config item to the first argument
+  // We pick the known keys as ESLint would do schema validation
+  const fusedConfig = flatConfigProps.reduce((acc, key) => {
+    if (key in options)
+      acc[key] = options[key] as any
+    return acc
+  }, {} as FlatConfigItem)
+  if (Object.keys(fusedConfig).length)
+    configs.push([fusedConfig])
 
-   if (enableVue) {
-      configs.push(vue({
-         overrides: overrides.vue,
-         stylistic: stylisticOptions,
-         typescript: !!enableTypeScript,
-      }))
-   }
+  const merged = combine(
+    ...configs,
+    ...userConfigs,
+  )
 
-   if (enableReact) {
-      configs.push(react({
-         overrides: overrides.react,
-         typescript: !!enableTypeScript,
-      }))
-   }
+  return merged
+}
 
-   if (enableUnoCSS) {
-      configs.push(unocss(
-         typeof enableUnoCSS === 'boolean' ? {} : enableUnoCSS,
-      ))
-   }
+export type ResolvedOptions<T> = T extends boolean
+  ? never
+  : NonNullable<T>
 
-   if (options.jsonc ?? true) {
-      configs.push(
-         jsonc({
-            overrides: overrides.jsonc,
-            stylistic: stylisticOptions,
-         }),
-         sortPackageJson(),
-         sortTsconfig(),
-      )
-   }
+export function resolveSubOptions<K extends keyof OptionsConfig>(
+  options: OptionsConfig,
+  key: K,
+): ResolvedOptions<OptionsConfig[K]> {
+  return typeof options[key] === 'boolean'
+    ? {} as any
+    : options[key] || {}
+}
 
-   if (options.yaml ?? true) {
-      configs.push(yaml({
-         overrides: overrides.yaml,
-         stylistic: stylisticOptions,
-      }))
-   }
-
-   if (options.markdown ?? true) {
-      configs.push(markdown({
-         componentExts,
-         overrides: overrides.markdown,
-      }))
-   }
-
-   // User can optionally pass a flat config item to the first argument
-   // We pick the known keys as ESLint would do schema validation
-   const fusedConfig = flatConfigProps.reduce((acc, key) => {
-      if (key in options)
-         acc[key] = options[key] as any
-      return acc
-   }, {} as FlatConfigItem)
-   if (Object.keys(fusedConfig).length)
-      configs.push([fusedConfig])
-
-   const merged = combine(
-      ...configs,
-      ...userConfigs,
-   )
-
-   return merged
+export function getOverrides<K extends keyof OptionsConfig>(
+  options: OptionsConfig,
+  key: K,
+) {
+  const sub = resolveSubOptions(options, key)
+  return {
+    ...(options.overrides as any)?.[key],
+    ...'overrides' in sub
+      ? sub.overrides
+      : {},
+  }
 }

@@ -3,7 +3,7 @@
 import { ref } from 'vue'
 
 const greeting = ref('Hello, Vue 3!')
-const counter = ref<number | string>(0)
+const counter = ref<number | 1>(0)
 
 // Define a function
 function incrementCounter() {
@@ -20,3 +20,16 @@ function incrementCounter() {
     <p>Counter: {{ counter }}</p>
   </div>
 </template>
+
+<style>
+.a {  color:   red }
+</style>
+
+<style lang="scss">
+$font-stack: Helvetica, sans-serif;
+$primary-color:   #333;
+
+body { font: 100% $font-stack;
+  color: $primary-color;
+}
+</style>

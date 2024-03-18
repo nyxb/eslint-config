@@ -6,66 +6,91 @@ import fg from 'fast-glob'
 import type { FlatConfigItem, OptionsConfig } from '../src/types'
 
 beforeAll(async () => {
-   await fs.rm('_fixtures', { recursive: true, force: true })
+  await fs.rm('_fixtures', { recursive: true, force: true })
 })
 afterAll(async () => {
-   await fs.rm('_fixtures', { recursive: true, force: true })
+  await fs.rm('_fixtures', { recursive: true, force: true })
 })
 
 runWithConfig('js', {
-   typescript: false,
-   vue: false,
+  typescript: false,
+  vue: false,
 })
 runWithConfig('all', {
-   typescript: true,
-   vue: true,
+  typescript: true,
+  vue: true,
+  svelte: true,
+  astro: true,
 })
 runWithConfig('no-style', {
-   typescript: true,
-   vue: true,
-   stylistic: false,
+  typescript: true,
+  vue: true,
+  stylistic: false,
 })
 runWithConfig(
-   'tab-double-quotes',
-   {
-      typescript: true,
-      vue: true,
-      stylistic: {
-         indent: 'tab',
-         quotes: 'double',
-      },
-   },
-   {
-      rules: {
-         'style/no-mixed-spaces-and-tabs': 'off',
-      },
-   },
+  'tab-double-quotes',
+  {
+    typescript: true,
+    vue: true,
+    stylistic: {
+      indent: 'tab',
+      quotes: 'double',
+    },
+  },
+  {
+    rules: {
+      'style/no-mixed-spaces-and-tabs': 'off',
+    },
+  },
+)
+
+// https://github.com/nyxb/eslint-config/issues/255
+runWithConfig(
+  'ts-override',
+  {
+    typescript: true,
+  },
+  {
+    rules: {
+      'ts/consistent-type-definitions': ['error', 'type'],
+    },
+  },
 )
 
 runWithConfig(
-   'ts-override',
-   {
-      typescript: true,
-   },
-   {
-      rules: {
-         'ts/consistent-type-definitions': ['error', 'type'],
-      },
-   },
+  'with-formatters',
+  {
+    typescript: true,
+    vue: true,
+    astro: true,
+    formatters: true,
+  },
+)
+
+runWithConfig(
+  'no-markdown-with-formatters',
+  {
+    jsx: false,
+    vue: false,
+    markdown: false,
+    formatters: {
+      markdown: true,
+    },
+  },
 )
 
 function runWithConfig(name: string, configs: OptionsConfig, ...items: FlatConfigItem[]) {
-   it.concurrent(name, async ({ expect }) => {
-      const from = resolve('fixtures/input')
-      const output = resolve('fixtures/output', name)
-      const target = resolve('_fixtures', name)
+  it.concurrent(name, async ({ expect }) => {
+    const from = resolve('fixtures/input')
+    const output = resolve('fixtures/output', name)
+    const target = resolve('_fixtures', name)
 
-      await fs.copy(from, target, {
-         filter: (src) => {
-            return !src.includes('node_modules')
-         },
-      })
-      await fs.writeFile(join(target, 'eslint.config.js'), `
+    await fs.copy(from, target, {
+      filter: (src) => {
+        return !src.includes('node_modules')
+      },
+    })
+    await fs.writeFile(join(target, 'eslint.config.js'), `
 // @eslint-disable
 import nyxb from '@nyxb/eslint-config'
 
@@ -75,25 +100,29 @@ export default nyxb(
 )
   `)
 
-      await execa('npx', ['eslint', '.', '--fix'], {
-         cwd: target,
-         stdio: 'pipe',
-      })
+    await execa('npx', ['eslint', '.', '--fix'], {
+      cwd: target,
+      stdio: 'pipe',
+    })
 
-      const files = await fg('**/*', {
-         ignore: [
-            'node_modules',
-            'eslint.config.js',
-         ],
-         cwd: target,
-      })
+    const files = await fg('**/*', {
+      ignore: [
+        'node_modules',
+        'eslint.config.js',
+      ],
+      cwd: target,
+    })
 
-      await Promise.all(files.map(async (file) => {
-         let content = await fs.readFile(join(target, file), 'utf-8')
-         const source = await fs.readFile(join(from, file), 'utf-8')
-         if (content === source)
-            content = '// unchanged\n'
-         await expect.soft(content).toMatchFileSnapshot(join(output, file))
-      }))
-   }, 30_000)
+    await Promise.all(files.map(async (file) => {
+      const content = await fs.readFile(join(target, file), 'utf-8')
+      const source = await fs.readFile(join(from, file), 'utf-8')
+      const outputPath = join(output, file)
+      if (content === source) {
+        if (fs.existsSync(outputPath))
+          fs.remove(outputPath)
+        return
+      }
+      await expect.soft(content).toMatchFileSnapshot(join(output, file))
+    }))
+  }, 30_000)
 }

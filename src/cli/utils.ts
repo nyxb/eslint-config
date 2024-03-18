@@ -9,3 +9,16 @@ export function isGitClean() {
     return false
   }
 }
+
+export function getEslintConfigContent(
+  mainConfig: string,
+  additionalConfigs?: string[],
+) {
+  return `
+import nyxb from '@nyxb/eslint-config'
+
+export default nyxb({
+${mainConfig}
+}${additionalConfigs?.map(config => `,{\n${config}\n}`)})
+`.trimStart()
+}

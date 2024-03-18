@@ -1,6 +1,6 @@
-// @ts-check
+// @ts-expect-error missing types
 import styleMigrate from '@stylistic/eslint-plugin-migrate'
-import nyxb from './dist/index.js'
+import nyxb from './src'
 
 export default nyxb(
   {
@@ -11,6 +11,7 @@ export default nyxb(
       'fixtures',
       '_fixtures',
     ],
+    formatters: true,
   },
   {
     files: ['src/**/*.ts'],

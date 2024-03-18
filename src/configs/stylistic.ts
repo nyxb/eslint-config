@@ -1,43 +1,57 @@
 import { interopDefault } from '../utils'
-import type { FlatConfigItem, StylisticConfig } from '../types'
+import type { FlatConfigItem, OptionsOverrides, StylisticConfig } from '../types'
 import { pluginNyxb } from '../plugins'
 
-export async function stylistic(options: StylisticConfig = {}): Promise<FlatConfigItem[]> {
-   const {
-      indent = 3,
-      jsx = true,
-      quotes = 'single',
-      semi = false,
-   } = options
+export const StylisticConfigDefaults: StylisticConfig = {
+  indent: 2,
+  jsx: true,
+  quotes: 'single',
+  semi: false,
+}
 
-   const pluginStylistic = await interopDefault(import('@stylistic/eslint-plugin'))
+export async function stylistic(
+  options: StylisticConfig & OptionsOverrides = {},
+): Promise<FlatConfigItem[]> {
+  const {
+    indent,
+    jsx,
+    overrides = {},
+    quotes,
+    semi,
+  } = {
+    ...StylisticConfigDefaults,
+    ...options,
+  }
 
-   const config = pluginStylistic.configs.customize({
-      flat: true,
-      indent,
-      jsx,
-      pluginName: 'style',
-      quotes,
-      semi,
-   })
+  const pluginStylistic = await interopDefault(import('@stylistic/eslint-plugin'))
 
-   return [
-      {
-         name: 'nyxb:stylistic',
-         plugins: {
-            nyxb: pluginNyxb,
-            style: pluginStylistic,
-         },
-         rules: {
-            ...config.rules,
+  const config = pluginStylistic.configs.customize({
+    flat: true,
+    indent,
+    jsx,
+    pluginName: 'style',
+    quotes,
+    semi,
+  })
 
-            'curly': ['error', 'multi-or-nest', 'consistent'],
-            'nyxb/consistent-list-newline': 'error',
-            'nyxb/if-newline': 'error',
-            'nyxb/indent-binary-ops': ['error', { indent }],
-
-            'nyxb/top-level-function': 'error',
-         },
+  return [
+    {
+      name: 'nyxb:stylistic',
+      plugins: {
+        nyxb: pluginNyxb,
+        style: pluginStylistic,
       },
-   ]
+      rules: {
+        ...config.rules,
+
+        'curly': ['error', 'multi-or-nest', 'consistent'],
+        'nyxb/consistent-list-newline': 'error',
+        'nyxb/if-newline': 'error',
+
+        'nyxb/top-level-function': 'error',
+
+        ...overrides,
+      },
+    },
+  ]
 }

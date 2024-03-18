@@ -7,12 +7,12 @@ import { pluginPerfectionist } from '../plugins'
  * @see https://github.com/azat-io/eslint-plugin-perfectionist
  */
 export async function perfectionist(): Promise<FlatConfigItem[]> {
-   return [
-      {
-         name: 'nyxb:perfectionist',
-         plugins: {
-            perfectionist: pluginPerfectionist,
-         },
+  return [
+    {
+      name: 'nyxb:perfectionist',
+      plugins: {
+        perfectionist: pluginPerfectionist,
       },
-   ]
+    },
+  ]
 }

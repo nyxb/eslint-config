@@ -12,10 +12,23 @@
 import { ref } from 'vue';
 
 const greeting = ref('Hello, Vue 3!');
-let counter = ref<number  | string>(0);
+let counter = ref<number  | 1>(0);
 
 // Define a function
 const incrementCounter = () => {
   counter.value++;
 };
 </script>
+
+<style>
+.a {  color:   red }
+</style>
+
+<style lang="scss">
+$font-stack: Helvetica, sans-serif;
+$primary-color:   #333;
+
+body { font: 100% $font-stack;
+  color: $primary-color;
+}
+</style>
