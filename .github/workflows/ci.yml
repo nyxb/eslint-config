@@ -24,13 +24,13 @@ jobs:
           node-version: lts/*
 
       - name: Setup
-        run: npm i -g @nyxb/nyxi
+        run: npm i -g @antfu/ni
 
       - name: Install
-        run: nyxci
+        run: nci
 
       - name: Lint
-        run: nyxr lint
+        run: nr lint
 
   typecheck:
     runs-on: ubuntu-latest
@@ -43,16 +43,16 @@ jobs:
       - name: Set node
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: lts/*
 
       - name: Setup
-        run: npm i -g @nyxb/nyxi
+        run: npm i -g @antfu/ni
 
       - name: Install
-        run: nyxci
+        run: nci
 
       - name: Typecheck
-        run: nyxr typecheck
+        run: nr typecheck
 
   test:
     runs-on: ${{ matrix.os }}
@@ -75,13 +75,13 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Setup
-        run: npm i -g @nyxb/nyxi
+        run: npm i -g @antfu/ni
 
       - name: Install
-        run: nyxci
+        run: nci
 
       - name: Build
-        run: nyxr build
+        run: nr build
 
       - name: Test
-        run: nyxr test
+        run: nr test
