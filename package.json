@@ -1,7 +1,7 @@
 {
   "name": "@nyxb/eslint-config",
   "type": "module",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "packageManager": "pnpm@8.15.4",
   "description": "Nyxb's ESLint config",
   "author": "Dennis Ollhoff <dennis.ollhoff@nyxb.email> (https://github.com/nyxb/)",
@@ -30,6 +30,7 @@
     "dev": "tsup --format esm,cjs --watch & eslint-flat-config-viewer",
     "watch": "tsup --format esm,cjs --watch",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "prepack": "nyxr build",
     "release": "bumping && pnpm publish",
     "test": "vitest",
@@ -149,7 +150,6 @@
     "execa": "^8.0.1",
     "fast-glob": "^3.3.2",
     "fs-extra": "^11.2.0",
-    "lint-staged": "^15.2.2",
     "prettier-plugin-astro": "^0.13.0",
     "prettier-plugin-slidev": "^1.0.5",
     "rimraf": "^5.0.5",
@@ -160,11 +160,5 @@
     "typescript": "^5.4.2",
     "vitest": "^1.3.1",
     "vue": "^3.4.21"
-  },
-  "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
-  },
-  "lint-staged": {
-    "*": "eslint --fix"
   }
 }
