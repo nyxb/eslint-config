@@ -1,6 +1,6 @@
 # @nyxb/eslint-config
 
-[![npm](https://img.shields.io/npm/v/@nyxb/eslint-config?color=444&label=)](https://npmjs.com/package/@nyxb/eslint-config) [![code style](https://nyxb.blog/badges/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
+[![npm](https://img.shields.io/npm/v/@nyxb/eslint-config?color=444&label=)](https://npmjs.com/package/@nyxb/eslint-config) [![code style](https://nyxb.nexus/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
 
 - Single quotes, no semi
 - Auto fix for formatting (aimed to be used standalone **without** Prettier)
@@ -15,6 +15,9 @@
 - Optional [React](#react), [Svelte](#svelte), [UnoCSS](#unocss), [Astro](#astro) support
 - Optional [formatters](#formatters) support for CSS, HTML, etc.
 - **Style principle**: Minimal for reading, stable for diff, consistent
+
+> [!IMPORTANT]
+> Since v1.0.0, this config is rewritten to the new [ESLint Flat config](https://eslint.org/docs/latest/use/configure/configuration-files-new), check the [release note](https://github.com/nyxb/eslint-config/releases/tag/v1.0.0) for more details.
 
 ## Usage
 
@@ -267,13 +270,15 @@ export default combine(
 
 Check out the [configs](https://github.com/nyxb/eslint-config/blob/main/src/configs) and [factory](https://github.com/nyxb/eslint-config/blob/main/src/factory.ts) for more details.
 
+> Thanks to [sxzz/eslint-config](https://github.com/sxzz/eslint-config) for the inspiration and reference.
+
 ### Plugins Renaming
 
 Since flat config requires us to explicitly provide the plugin names (instead of the mandatory convention from npm package name), we renamed some plugins to make the overall scope more consistent and easier to write.
 
 | New Prefix | Original Prefix        | Source Plugin                                                                              |
 | ---------- | ---------------------- | ------------------------------------------------------------------------------------------ |
-| `import/*` | `i/*`                  | [eslint-plugin-i](https://github.com/un-es/eslint-plugin-i)                                |
+| `import/*` | `import-x/*`           | [eslint-plugin-import-x](https://github.com/un-es/eslint-plugin-import-x)                  |
 | `node/*`   | `n/*`                  | [eslint-plugin-n](https://github.com/eslint-community/eslint-plugin-n)                     |
 | `yaml/*`   | `yml/*`                | [eslint-plugin-yml](https://github.com/ota-meshi/eslint-plugin-yml)                        |
 | `ts/*`     | `@typescript-eslint/*` | [@typescript-eslint/eslint-plugin](https://github.com/typescript-eslint/typescript-eslint) |
@@ -288,6 +293,15 @@ When you want to override rules, or disable them inline, you need to update to t
 +// eslint-disable-next-line ts/consistent-type-definitions
 type foo = { bar: 2 }
 ```
+
+> [!NOTE]
+> About plugin renaming - it is actually rather a dangrous move that might leading to potential naming collisions, pointed out [here](https://github.com/eslint/eslint/discussions/17766) and [here](https://github.com/prettier/eslint-config-prettier#eslintconfigjs-flat-config-plugin-caveat). As this config also very **personal** and **opinionated**, I ambitiously position this config as the only **"top-level"** config per project, that might pivots the taste of how rules are named.
+>
+> This config cares more about the user-facings DX, and try to ease out the implementation details. For example, users could keep using the semantic `import/order` without ever knowing the underlying plugin has migrated twice to `eslint-plugin-i` and then to `eslint-plugin-import-x`. User are also not forced to migrate to the implicit `i/order` halfway only because we swapped the implementation to a fork.
+>
+> That said, it's probably still not a good idea. You might not want to doing this if you are maintaining your own eslint config.
+>
+> Feel free to open issues if you want to combine this config with some other config presets but faced naming collisions. I am happy to figure out a way to make them work. But at this moment I have no plan to revert the renaming.
 
 ### Rules Overrides
 
@@ -499,6 +513,21 @@ export default nyxb({
 })
 ```
 
+### Editor Specific Disables
+
+Some rules are disabled when inside ESLint IDE integrations, namely [`unused-imports/no-unused-imports`](https://www.npmjs.com/package/eslint-plugin-unused-imports) [`test/no-only-tests`](https://github.com/levibuzolic/eslint-plugin-no-only-tests)
+
+This is to prevent unused imports from getting removed by the IDE during refactoring to get a better developer experience. Those rules will be applied when you run ESLint in the terminal or [Lint Staged](#lint-staged). If you don't want this behavior, you can disable them:
+
+```js
+// eslint.config.js
+import nyxb from '@nyxb/eslint-config'
+
+export default nyxb({
+  isInEditor: false
+})
+```
+
 ### Lint Staged
 
 If you want to apply lint and auto-fix before every commit, you can add the following to your `package.json`:
@@ -555,16 +584,16 @@ This project follows [Semantic Versioning](https://semver.org/) for releases. Ho
 If you enjoy this code style, and would like to mention it in your project, here is the badge you can use:
 
 ```md
-[![code style](https://nyxb.me/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
+[![code style](https://nyxb.nexus/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
 ```
 
-[![code style](https://nyxb.me/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
+[![code style](https://nyxb.nexus/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
 
 ## FAQ
 
 ### Prettier?
 
-[Why I don't use Prettier](https://nyxb.me/posts/why-not-prettier)
+[Why I don't use Prettier](https://nyxb.nexus/posts/why-not-prettier)
 
 Well, you can still use Prettier to format files that are not supported well by ESLint yet, such as `.css`, `.html`, etc. See [formatters](#formatters) for more details.
 
@@ -587,8 +616,8 @@ Sure, you can configure and override rules locally in your project to fit your n
 - [nyxb/dotfiles](https://github.com/nyxb/dotfiles) - My dotfiles
 - [nyxb/vscode-settings](https://github.com/nyxb/vscode-settings) - My VS Code settings
 - [nyxb/starter-ts](https://github.com/nyxb/starter-ts) - My starter template for TypeScript library
-- [nyxb/vitesse](https://github.com/nyxb/vitesse) - My starter template for Vue & Vite app
+- [nyxb/velocita](https://github.com/nyxb/velocita) - My starter template for Vue & Vite app
 
 ## License
 
-[MIT](./LICENSE) License &copy; 2019-PRESENT [Anthony Fu](https://github.com/nyxb)
+[MIT](./LICENSE) License &copy; 2019-PRESENT [Dennis Ollhoff](https://github.com/nyxb)

@@ -22,7 +22,7 @@ import type {
 import type { RuleOptions as JSDocRules } from '@eslint-types/jsdoc/types'
 import type { RuleOptions as TypeScriptRules } from '@eslint-types/typescript-eslint/types'
 import type { RuleOptions as UnicornRules } from '@eslint-types/unicorn/types'
-import type { Rules as NyxbRules } from 'eslint-plugin-antfu'
+import type { Rules as NyxbRules } from 'eslint-plugin-nyxb'
 import type { StylisticCustomizeOptions, UnprefixedRuleOptions as StylisticRules } from '@stylistic/eslint-plugin'
 import type { VendoredPrettierOptions } from './vender/prettier-types'
 
@@ -84,7 +84,7 @@ export interface OptionsVue extends OptionsOverrides {
   /**
    * Create virtual files for Vue SFC blocks to enable linting.
    *
-   * @see https://github.com/antfu/eslint-processor-vue-blocks
+   * @see https://github.com/nyxb/eslint-processor-vue-blocks
    * @default true
    */
   sfcBlocks?: boolean | VueBlocksOptions
@@ -230,7 +230,7 @@ export interface OptionsConfig extends OptionsComponentExts {
    *
    * Passing an object to configure the options.
    *
-   * @see https://github.com/antfu/eslint-config-flat-gitignore
+   * @see https://github.com/nyxb/eslint-config-flat-gitignore
    * @default true
    */
   gitignore?: boolean | FlatGitignoreOptions
@@ -371,6 +371,13 @@ export interface OptionsConfig extends OptionsComponentExts {
    * @default auto-detect based on the process.env
    */
   isInEditor?: boolean
+
+  /**
+   * Automatically rename plugins in the config.
+   *
+   * @default true
+   */
+  autoRenamePlugins?: boolean
 
   /**
    * Provide overrides for rules for each integration.
