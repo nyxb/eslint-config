@@ -1,5 +1,5 @@
 import type { FlatConfigItem, OptionsStylistic } from '../types'
-import { pluginNyxb, pluginImport } from '../plugins'
+import { pluginImport, pluginNyxb } from '../plugins'
 import { GLOB_SRC_EXT } from '../globs'
 
 export async function imports(options: OptionsStylistic = {}): Promise<FlatConfigItem[]> {
@@ -11,21 +11,21 @@ export async function imports(options: OptionsStylistic = {}): Promise<FlatConfi
     {
       name: 'nyxb:imports',
       plugins: {
-        nyxb: pluginNyxb,
         import: pluginImport,
+        nyxb: pluginNyxb,
       },
       rules: {
-        'nyxb/import-dedupe': 'error',
-        'nyxb/no-import-dist': 'error',
-        'nyxb/no-import-node-modules-by-path': 'error',
-
         'import/first': 'error',
         'import/no-duplicates': 'error',
         'import/no-mutable-exports': 'error',
+
         'import/no-named-default': 'error',
         'import/no-self-import': 'error',
         'import/no-webpack-loader-syntax': 'error',
         'import/order': 'error',
+        'nyxb/import-dedupe': 'error',
+        'nyxb/no-import-dist': 'error',
+        'nyxb/no-import-node-modules-by-path': 'error',
 
         ...stylistic
           ? {

@@ -44,11 +44,11 @@ export async function stylistic(
       rules: {
         ...config.rules,
 
+        'curly': ['error', 'multi-or-nest', 'consistent'],
         'nyxb/consistent-list-newline': 'error',
         'nyxb/if-newline': 'error',
-        'nyxb/top-level-function': 'error',
 
-        'curly': ['error', 'multi-or-nest', 'consistent'],
+        'nyxb/top-level-function': 'error',
 
         ...overrides,
       },

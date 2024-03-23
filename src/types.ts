@@ -18,11 +18,11 @@ import type {
   VitestRules,
   VueRules,
   YmlRules,
-} from '@nyxb/eslint-define-config'
+} from '@antfu/eslint-define-config'
 import type { RuleOptions as JSDocRules } from '@eslint-types/jsdoc/types'
 import type { RuleOptions as TypeScriptRules } from '@eslint-types/typescript-eslint/types'
 import type { RuleOptions as UnicornRules } from '@eslint-types/unicorn/types'
-import type { Rules as NyxbRules } from 'eslint-plugin-nyxb'
+import type { Rules as NyxbRules } from 'eslint-plugin-antfu'
 import type { StylisticCustomizeOptions, UnprefixedRuleOptions as StylisticRules } from '@stylistic/eslint-plugin'
 import type { VendoredPrettierOptions } from './vender/prettier-types'
 
