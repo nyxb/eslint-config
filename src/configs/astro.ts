@@ -1,10 +1,10 @@
-import type { FlatConfigItem, OptionsFiles, OptionsOverrides, OptionsStylistic } from '../types'
+import type { OptionsFiles, OptionsOverrides, OptionsStylistic, TypedFlatConfigItem } from '../types'
 import { GLOB_ASTRO } from '../globs'
 import { interopDefault } from '../utils'
 
 export async function astro(
   options: OptionsOverrides & OptionsStylistic & OptionsFiles = {},
-): Promise<FlatConfigItem[]> {
+): Promise<TypedFlatConfigItem[]> {
   const {
     files = [GLOB_ASTRO],
     overrides = {},
@@ -23,7 +23,7 @@ export async function astro(
 
   return [
     {
-      name: 'nyxb:astro:setup',
+      name: 'nyxb/astro/setup',
       plugins: {
         astro: pluginAstro,
       },
@@ -37,7 +37,7 @@ export async function astro(
           parser: parserTs as any,
         },
       },
-      name: 'nyxb:astro:rules',
+      name: 'nyxb/astro/rules',
       rules: {
         'astro/no-set-html-directive': 'off',
         'astro/semi': 'off',

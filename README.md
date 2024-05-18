@@ -1,73 +1,66 @@
 # @nyxb/eslint-config
 
-[![npm](https://img.shields.io/npm/v/@nyxb/eslint-config?color=444&label=)](https://npmjs.com/package/@nyxb/eslint-config) [![code style](https://nyxb.nexus/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
+[![npm](https://img.shields.io/npm/v/@nyxb/eslint-config?color=444&label=)](https://npmjs.com/package/@nyxb/eslint-config) [![code style](https://nyxb.me/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
 
-- Single quotes, no semi
 - Auto fix for formatting (aimed to be used standalone **without** Prettier)
-- Sorted imports, dangling commas
 - Reasonable defaults, best practices, only one line of config
-- Designed to work with TypeScript, JSX, Vue out-of-box
-- Lints also for json, yaml, toml, markdown
+- Designed to work with TypeScript, JSX, Vue, JSON, YAML, Toml, Markdown, etc. Out-of-box.
 - Opinionated, but [very customizable](#customization)
 - [ESLint Flat config](https://eslint.org/docs/latest/use/configure/configuration-files-new), compose easily!
-- Using [ESLint Stylistic](https://github.com/eslint-stylistic/eslint-stylistic)
-- Respects `.gitignore` by default
-- Optional [React](#react), [Svelte](#svelte), [UnoCSS](#unocss), [Astro](#astro) support
-- Optional [formatters](#formatters) support for CSS, HTML, etc.
+- Optional [React](#react), [Svelte](#svelte), [UnoCSS](#unocss), [Astro](#astro), [Solid](#solid) support
+- Optional [formatters](#formatters) support for formatting CSS, HTML, XML, etc.
 - **Style principle**: Minimal for reading, stable for diff, consistent
+  - Sorted imports, dangling commas
+  - Single quotes, no semi
+  - Using [ESLint Stylistic](https://github.com/eslint-stylistic/eslint-stylistic)
+- Respects `.gitignore` by default
+- Supports ESLint v9 or v8.50.0+
 
 > [!IMPORTANT]
 > Since v1.0.0, this config is rewritten to the new [ESLint Flat config](https://eslint.org/docs/latest/use/configure/configuration-files-new), check the [release note](https://github.com/nyxb/eslint-config/releases/tag/v1.0.0) for more details.
 
 ## Usage
 
-### Wizard
+### Starter Wizard
 
-We provided a CLI tool to help you set up your project, or migrate from the legacy config to the new flat config.
+We provided a CLI tool to help you set up your project, or migrate from the legacy config to the new flat config with one command.
 
 ```bash
 npx @nyxb/eslint-config@latest
 ```
 
-### Install
+### Manual Install
+
+If you prefer to set up manually:
 
 ```bash
 pnpm i -D eslint @nyxb/eslint-config
 ```
 
-### Create config file
-
-With [`"type": "module"`](https://nodejs.org/api/packages.html#type) in `package.json` (recommended):
+And create `eslint.config.mjs` in your project root:
 
 ```js
-// eslint.config.js
+// eslint.config.mjs
 import nyxb from '@nyxb/eslint-config'
 
 export default nyxb()
 ```
 
-With CJS:
-
-```js
-// eslint.config.js
-const nyxb = require('@nyxb/eslint-config').default
-
-module.exports = nyxb()
-```
-
-> [!TIP]
-> ESLint only detects `eslint.config.js` as the flat config entry, meaning you need to put `type: module` in your `package.json` or you have to use CJS in `eslint.config.js`. If you want explicit extension like `.mjs` or `.cjs`, or even `eslint.config.ts`, you can install [`eslint-ts-patch`](https://github.com/nyxb/eslint-ts-patch) to fix it.
-
+<details>
+<summary>
 Combined with legacy config:
+</summary>
+
+If you still use some configs from the legacy eslintrc format, you can use the [`@eslint/eslintrc`](https://www.npmjs.com/package/@eslint/eslintrc) package to convert them to the flat config.
 
 ```js
-// eslint.config.js
-const nyxb = require('@nyxb/eslint-config').default
-const { FlatCompat } = require('@eslint/eslintrc')
+// eslint.config.mjs
+import nyxb from '@nyxb/eslint-config'
+import { FlatCompat } from '@eslint/eslintrc'
 
 const compat = new FlatCompat()
 
-module.exports = nyxb(
+export default nyxb(
   {
     ignores: [],
   },
@@ -86,6 +79,8 @@ module.exports = nyxb(
 
 > Note that `.eslintignore` no longer works in Flat config, see [customization](#customization) for more details.
 
+</details>
+
 ### Add script for package.json
 
 For example:
@@ -99,7 +94,7 @@ For example:
 }
 ```
 
-## VS Code support (auto fix)
+## VS Code support (auto fix on save)
 
 Install [VS Code ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
 
@@ -108,6 +103,7 @@ Add the following settings to your `.vscode/settings.json`:
 ```jsonc
 {
   // Enable the ESlint flat config support
+  // (remove this if your ESLint extension above v3.0.5)
   "eslint.experimental.useFlatConfig": true,
 
   // Disable the default formatter, use eslint instead
@@ -146,7 +142,11 @@ Add the following settings to your `.vscode/settings.json`:
     "json",
     "jsonc",
     "yaml",
-    "toml"
+    "toml",
+    "xml",
+    "gql",
+    "graphql",
+    "astro"
   ]
 }
 ```
@@ -303,6 +303,8 @@ type foo = { bar: 2 }
 >
 > Feel free to open issues if you want to combine this config with some other config presets but faced naming collisions. I am happy to figure out a way to make them work. But at this moment I have no plan to revert the renaming.
 
+Since v2.9.0, this preset will automatically rename the plugins also for your custom configs. You can use the original prefix to override the rules directly.
+
 ### Rules Overrides
 
 Certain rules would only be enabled in specific files, for example, `ts/*` rules would only be enabled in `.ts` files and `vue/*` rules would only be enabled in `.vue` files. If you want to override the rules, you need to specify the file extension:
@@ -332,7 +334,7 @@ export default nyxb(
 )
 ```
 
-We also provided a `overrides` options in each integration to make it easier:
+We also provided the `overrides` options in each integration to make it easier:
 
 ```js
 // eslint.config.js
@@ -357,14 +359,70 @@ export default nyxb({
 })
 ```
 
+### Config Composer
+
+Since v2.10.0, the factory function `nyxb()` returns a [`FlatConfigComposer` object from `eslint-flat-config-utils`](https://github.com/nyxb/eslint-flat-config-utils#composer) where you can chain the methods to compose the config even more flexibly.
+
+```js
+// eslint.config.js
+import nyxb from '@nyxb/eslint-config'
+
+export default nyxb()
+  .prepend(
+    // some configs before the main config
+  )
+  // overrides any named configs
+  .override(
+    'nyxb/imports',
+    {
+      rules: {
+        'import/order': ['error', { 'newlines-between': 'always' }],
+      }
+    }
+  )
+  // rename plugin prefixes
+  .renamePlugins({
+    'old-prefix': 'new-prefix',
+    // ...
+  })
+// ...
+```
+
+### Vue
+
+Vue support is detected automatically by checking if `vue` is installed in your project. You can also explicitly enable/disable it:
+
+```js
+// eslint.config.js
+import nyxb from '@nyxb/eslint-config'
+
+export default nyxb({
+  vue: true
+})
+```
+
+#### Vue 2
+
+We have limited support for Vue 2 (as it's already [reached EOL](https://v2.vuejs.org/eol/)). If you are still using Vue 2, you can configure it manually by setting `vueVersion` to `2`:
+
+```js
+// eslint.config.js
+import nyxb from '@nyxb/eslint-config'
+
+export default nyxb({
+  vue: {
+    vueVersion: 2
+  },
+})
+```
+
+As it's in maintenance mode, we only accept bug fixes for Vue 2. It might also be removed in the future when `eslint-plugin-vue` drops support for Vue 2. We recommend upgrading to Vue 3 if possible.
+
 ### Optional Configs
 
 We provide some optional configs for specific use cases, that we don't include their dependencies by default.
 
 #### Formatters
-
-> [!WARNING]
-> Experimental feature, changes might not follow semver.
 
 Use external formatters to format files that ESLint cannot handle yet (`.css`, `.html`, etc). Powered by [`eslint-plugin-format`](https://github.com/nyxb/eslint-plugin-format).
 
@@ -416,7 +474,7 @@ export default nyxb({
 Running `npx eslint` should prompt you to install the required dependencies, otherwise, you can install them manually:
 
 ```bash
-npm i -D eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-react-refresh
+npm i -D @eslint-react/eslint-plugin eslint-plugin-react-hooks eslint-plugin-react-refresh
 ```
 
 #### Svelte
@@ -457,6 +515,25 @@ Running `npx eslint` should prompt you to install the required dependencies, oth
 npm i -D eslint-plugin-astro
 ```
 
+#### Solid
+
+To enable Solid support, you need to explicitly turn it on:
+
+```js
+// eslint.config.js
+import nyxb from '@nyxb/eslint-config'
+
+export default nyxb({
+  solid: true,
+})
+```
+
+Running `npx eslint` should prompt you to install the required dependencies, otherwise, you can install them manually:
+
+```bash
+npm i -D eslint-plugin-solid
+```
+
 #### UnoCSS
 
 To enable UnoCSS support, you need to explicitly turn it on:
@@ -480,23 +557,39 @@ npm i -D @unocss/eslint-plugin
 
 This config also provides some optional plugins/rules for extended usage.
 
-#### `perfectionist` (sorting)
+#### `command`
 
-This plugin [`eslint-plugin-perfectionist`](https://github.com/azat-io/eslint-plugin-perfectionist) allows you to sorted object keys, imports, etc, with auto-fix.
+Powered by [`eslint-plugin-command`](https://github.com/nyxb/eslint-plugin-command). It is not a typical rule for linting, but an on-demand micro-codemod tool that triggers by specific comments.
 
-The plugin is installed but no rules are enabled by default.
+For a few triggers, for example:
 
-It's recommended to opt-in on each file individually using [configuration comments](https://eslint.org/docs/latest/use/configure/rules#using-configuration-comments-1).
+- `/// to-function` - converts an arrow function to a normal function
+- `/// to-arrow` - converts a normal function to an arrow function
+- `/// to-for-each` - converts a for-in/for-of loop to `.forEach()`
+- `/// to-for-of` - converts a `.forEach()` to a for-of loop
+- `/// keep-sorted` - sorts an object/array/interface
+- ... etc. - refer to the [documentation](https://github.com/nyxb/eslint-plugin-command#built-in-commands)
 
-```js
-/* eslint perfectionist/sort-objects: "error" */
-const objectWantedToSort = {
-  a: 2,
-  b: 1,
-  c: 3,
+You can add the trigger comment one line above the code you want to transform, for example (note the triple slash):
+
+<!-- eslint-skip -->
+
+```ts
+/// to-function
+const foo = async (msg: string): void => {
+  console.log(msg)
 }
-/* eslint perfectionist/sort-objects: "off" */
 ```
+
+Will be transformed to this when you hit save with your editor or run `eslint . --fix`:
+
+```ts
+async function foo(msg: string): void {
+  console.log(msg)
+}
+```
+
+The command comments are usually one-off and will be removed along with the transformation.
 
 ### Type Aware Rules
 
@@ -554,12 +647,12 @@ npx simple-git-hooks
 
 ## View what rules are enabled
 
-I built a visual tool to help you view what rules are enabled in your project and apply them to what files, [eslint-flat-config-viewer](https://github.com/nyxb/eslint-flat-config-viewer)
+I built a visual tool to help you view what rules are enabled in your project and apply them to what files, [@eslint/config-inspector](https://github.com/eslint/config-inspector)
 
 Go to your project root that contains `eslint.config.js` and run:
 
 ```bash
-npx eslint-flat-config-viewer
+npx @eslint/config-inspector
 ```
 
 ## Versioning Policy
@@ -584,16 +677,16 @@ This project follows [Semantic Versioning](https://semver.org/) for releases. Ho
 If you enjoy this code style, and would like to mention it in your project, here is the badge you can use:
 
 ```md
-[![code style](https://nyxb.nexus/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
+[![code style](https://nyxb.me/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
 ```
 
-[![code style](https://nyxb.nexus/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
+[![code style](https://nyxb.me/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
 
 ## FAQ
 
 ### Prettier?
 
-[Why I don't use Prettier](https://nyxb.nexus/posts/why-not-prettier)
+[Why I don't use Prettier](https://nyxb.me/posts/why-not-prettier)
 
 Well, you can still use Prettier to format files that are not supported well by ESLint yet, such as `.css`, `.html`, etc. See [formatters](#formatters) for more details.
 
@@ -607,6 +700,20 @@ Meanwhile, we do have dprint integrations for formatting other files such as `.m
 
 You can opt-in to the [`formatters`](#formatters) feature to format your CSS. Note that it's only doing formatting, but not linting. If you want proper linting support, give [`stylelint`](https://stylelint.io/) a try.
 
+### Top-level Function Style, etc.
+
+I am a very opinionated person, so as this config. I prefer the top-level functions always using the function declaration over arrow functions; I prefer one-line if statements without braces and always wraps, and so on. I even wrote some custom rules to enforce them.
+
+I know they are not necessarily the popular opinions. If you really want to get rid of them, you can disable them with:
+
+```ts
+import nyxb from '@nyxb/eslint-config'
+
+export default nyxb({
+  lessOpinionated: true
+})
+```
+
 ### I prefer XXX...
 
 Sure, you can configure and override rules locally in your project to fit your needs. If that still does not work for you, you can always fork this repo and maintain your own.
@@ -616,7 +723,7 @@ Sure, you can configure and override rules locally in your project to fit your n
 - [nyxb/dotfiles](https://github.com/nyxb/dotfiles) - My dotfiles
 - [nyxb/vscode-settings](https://github.com/nyxb/vscode-settings) - My VS Code settings
 - [nyxb/starter-ts](https://github.com/nyxb/starter-ts) - My starter template for TypeScript library
-- [nyxb/velocita](https://github.com/nyxb/velocita) - My starter template for Vue & Vite app
+- [nyxb/vitesse](https://github.com/nyxb/vitesse) - My starter template for Vue & Vite app
 
 ## License
 

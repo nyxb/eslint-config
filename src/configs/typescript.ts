@@ -1,12 +1,12 @@
 import process from 'node:process'
 import { GLOB_SRC, GLOB_TS, GLOB_TSX } from '../globs'
-import type { FlatConfigItem, OptionsComponentExts, OptionsFiles, OptionsOverrides, OptionsTypeScriptParserOptions, OptionsTypeScriptWithTypes } from '../types'
+import type { OptionsComponentExts, OptionsFiles, OptionsOverrides, OptionsTypeScriptParserOptions, OptionsTypeScriptWithTypes, TypedFlatConfigItem } from '../types'
 import { pluginNyxb } from '../plugins'
 import { interopDefault, renameRules, toArray } from '../utils'
 
 export async function typescript(
   options: OptionsFiles & OptionsComponentExts & OptionsOverrides & OptionsTypeScriptWithTypes & OptionsTypeScriptParserOptions = {},
-): Promise<FlatConfigItem[]> {
+): Promise<TypedFlatConfigItem[]> {
   const {
     componentExts = [],
     overrides = {},
@@ -24,7 +24,7 @@ export async function typescript(
     : undefined
   const isTypeAware = !!tsconfigPath
 
-  const typeAwareRules: FlatConfigItem['rules'] = {
+  const typeAwareRules: TypedFlatConfigItem['rules'] = {
     'dot-notation': 'off',
     'no-implied-eval': 'off',
     'no-throw-literal': 'off',
@@ -54,7 +54,7 @@ export async function typescript(
     interopDefault(import('@typescript-eslint/parser')),
   ] as const)
 
-  function makeParser(typeAware: boolean, files: string[], ignores?: string[]): FlatConfigItem {
+  function makeParser(typeAware: boolean, files: string[], ignores?: string[]): TypedFlatConfigItem {
     return {
       files,
       ...ignores ? { ignores } : {},
@@ -72,14 +72,14 @@ export async function typescript(
           ...parserOptions as any,
         },
       },
-      name: `nyxb:typescript:${typeAware ? 'type-aware-parser' : 'parser'}`,
+      name: `nyxb/typescript/${typeAware ? 'type-aware-parser' : 'parser'}`,
     }
   }
 
   return [
     {
       // Install the plugins without globs, so they can be configured separately.
-      name: 'nyxb:typescript:setup',
+      name: 'nyxb/typescript/setup',
       plugins: {
         nyxb: pluginNyxb,
         ts: pluginTs as any,
@@ -94,7 +94,7 @@ export async function typescript(
       : [makeParser(false, files)],
     {
       files,
-      name: 'nyxb:typescript:rules',
+      name: 'nyxb/typescript/rules',
       rules: {
         ...renameRules(
           pluginTs.configs['eslint-recommended'].overrides![0].rules!,
@@ -133,17 +133,19 @@ export async function typescript(
         ...overrides,
       },
     },
-    {
-      files: filesTypeAware,
-      name: 'nyxb:typescript:rules-type-aware',
-      rules: {
-        ...tsconfigPath ? typeAwareRules : {},
-        ...overrides,
-      },
-    },
+    ...isTypeAware
+      ? [{
+          files: filesTypeAware,
+          name: 'nyxb/typescript/rules-type-aware',
+          rules: {
+            ...tsconfigPath ? typeAwareRules : {},
+            ...overrides,
+          },
+        }]
+      : [],
     {
       files: ['**/*.d.ts'],
-      name: 'nyxb:typescript:dts-overrides',
+      name: 'nyxb/typescript/disables/dts',
       rules: {
         'eslint-comments/no-unlimited-disable': 'off',
         'import/no-duplicates': 'off',
@@ -153,14 +155,14 @@ export async function typescript(
     },
     {
       files: ['**/*.{test,spec}.ts?(x)'],
-      name: 'nyxb:typescript:tests-overrides',
+      name: 'nyxb/typescript/disables/test',
       rules: {
         'no-unused-expressions': 'off',
       },
     },
     {
       files: ['**/*.js', '**/*.cjs'],
-      name: 'nyxb:typescript:javascript-overrides',
+      name: 'nyxb/typescript/disables/cjs',
       rules: {
         'ts/no-require-imports': 'off',
         'ts/no-var-requires': 'off',

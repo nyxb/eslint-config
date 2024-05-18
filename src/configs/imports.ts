@@ -1,31 +1,31 @@
-import type { FlatConfigItem, OptionsStylistic } from '../types'
-import { pluginImport, pluginNyxb } from '../plugins'
+import type { OptionsStylistic, TypedFlatConfigItem } from '../types'
+import { pluginNyxb, pluginImport } from '../plugins'
 import { GLOB_SRC_EXT } from '../globs'
 
-export async function imports(options: OptionsStylistic = {}): Promise<FlatConfigItem[]> {
+export async function imports(options: OptionsStylistic = {}): Promise<TypedFlatConfigItem[]> {
   const {
     stylistic = true,
   } = options
 
   return [
     {
-      name: 'nyxb:imports',
+      name: 'nyxb/imports/rules',
       plugins: {
-        import: pluginImport,
         nyxb: pluginNyxb,
+        import: pluginImport,
       },
       rules: {
+        'nyxb/import-dedupe': 'error',
+        'nyxb/no-import-dist': 'error',
+        'nyxb/no-import-node-modules-by-path': 'error',
+
         'import/first': 'error',
         'import/no-duplicates': 'error',
         'import/no-mutable-exports': 'error',
-
         'import/no-named-default': 'error',
         'import/no-self-import': 'error',
         'import/no-webpack-loader-syntax': 'error',
         'import/order': 'error',
-        'nyxb/import-dedupe': 'error',
-        'nyxb/no-import-dist': 'error',
-        'nyxb/no-import-node-modules-by-path': 'error',
 
         ...stylistic
           ? {
@@ -36,7 +36,7 @@ export async function imports(options: OptionsStylistic = {}): Promise<FlatConfi
     },
     {
       files: ['**/bin/**/*', `**/bin.${GLOB_SRC_EXT}`],
-      name: 'nyxb:imports:bin',
+      name: 'nyxb/imports/disables/bin',
       rules: {
         'nyxb/no-import-dist': 'off',
         'nyxb/no-import-node-modules-by-path': 'off',

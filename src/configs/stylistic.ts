@@ -1,20 +1,25 @@
 import { interopDefault } from '../utils'
-import type { FlatConfigItem, OptionsOverrides, StylisticConfig } from '../types'
+import type { OptionsOverrides, StylisticConfig, TypedFlatConfigItem } from '../types'
 import { pluginNyxb } from '../plugins'
 
 export const StylisticConfigDefaults: StylisticConfig = {
-  indent: 2,
+  indent: 3,
   jsx: true,
   quotes: 'single',
   semi: false,
 }
 
+export interface StylisticOptions extends StylisticConfig, OptionsOverrides {
+  lessOpinionated?: boolean
+}
+
 export async function stylistic(
-  options: StylisticConfig & OptionsOverrides = {},
-): Promise<FlatConfigItem[]> {
+  options: StylisticOptions = {},
+): Promise<TypedFlatConfigItem[]> {
   const {
     indent,
     jsx,
+    lessOpinionated = false,
     overrides = {},
     quotes,
     semi,
@@ -36,7 +41,7 @@ export async function stylistic(
 
   return [
     {
-      name: 'nyxb:stylistic',
+      name: 'nyxb/stylistic/rules',
       plugins: {
         nyxb: pluginNyxb,
         style: pluginStylistic,
@@ -44,11 +49,18 @@ export async function stylistic(
       rules: {
         ...config.rules,
 
-        'curly': ['error', 'multi-or-nest', 'consistent'],
         'nyxb/consistent-list-newline': 'error',
-        'nyxb/if-newline': 'error',
 
-        'nyxb/top-level-function': 'error',
+        ...(lessOpinionated
+          ? {
+              curly: ['error', 'all'],
+            }
+          : {
+              'nyxb/if-newline': 'error',
+              'nyxb/top-level-function': 'error',
+              'curly': ['error', 'multi-or-nest', 'consistent'],
+            }
+        ),
 
         ...overrides,
       },

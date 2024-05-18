@@ -1,9 +1,12 @@
 import process from 'node:process'
 import fs from 'node:fs'
 import { isPackageExists } from 'local-pkg'
-import type { Awaitable, FlatConfigItem, OptionsConfig, UserConfigItem } from './types'
+import { FlatConfigComposer } from 'eslint-flat-config-utils'
+import type { Linter } from 'eslint'
+import type { Awaitable, ConfigNames, OptionsConfig, TypedFlatConfigItem } from './types'
 import {
   astro,
+  command,
   comments,
   ignores,
   imports,
@@ -14,6 +17,7 @@ import {
   node,
   perfectionist,
   react,
+  solid,
   sortPackageJson,
   sortTsconfig,
   stylistic,
@@ -26,10 +30,11 @@ import {
   vue,
   yaml,
 } from './configs'
-import { combine, interopDefault, renamePluginInConfigs } from './utils'
+import { interopDefault } from './utils'
 import { formatters } from './configs/formatters'
+import { regexp } from './configs/regexp'
 
-const flatConfigProps: (keyof FlatConfigItem)[] = [
+const flatConfigProps: (keyof TypedFlatConfigItem)[] = [
   'name',
   'files',
   'ignores',
@@ -49,6 +54,11 @@ const VuePackages = [
 ]
 
 export const defaultPluginRenaming = {
+  '@eslint-react': 'react',
+  '@eslint-react/dom': 'react-dom',
+  '@eslint-react/hooks-extra': 'react-hooks-extra',
+  '@eslint-react/naming-convention': 'react-naming-convention',
+
   '@stylistic': 'style',
   '@typescript-eslint': 'ts',
   'import-x': 'import',
@@ -60,17 +70,17 @@ export const defaultPluginRenaming = {
 /**
  * Construct an array of ESLint flat config items.
  *
- * @param {OptionsConfig & FlatConfigItem} options
+ * @param {OptionsConfig & TypedFlatConfigItem} options
  *  The options for generating the ESLint configurations.
- * @param {Awaitable<UserConfigItem | UserConfigItem[]>[]} userConfigs
+ * @param {Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[]>[]} userConfigs
  *  The user configurations to be merged with the generated configurations.
- * @returns {Promise<UserConfigItem[]>}
+ * @returns {Promise<TypedFlatConfigItem[]>}
  *  The merged ESLint configurations.
  */
-export async function nyxb(
-  options: OptionsConfig & FlatConfigItem = {},
-  ...userConfigs: Awaitable<UserConfigItem | UserConfigItem[]>[]
-): Promise<UserConfigItem[]> {
+export function nyxb(
+  options: OptionsConfig & TypedFlatConfigItem = {},
+  ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.FlatConfig[]>[]
+): FlatConfigComposer<TypedFlatConfigItem, ConfigNames> {
   const {
     astro: enableAstro = false,
     autoRenamePlugins = true,
@@ -78,6 +88,8 @@ export async function nyxb(
     gitignore: enableGitignore = true,
     isInEditor = !!((process.env.VSCODE_PID || process.env.VSCODE_CWD || process.env.JETBRAINS_IDE || process.env.VIM) && !process.env.CI),
     react: enableReact = false,
+    regexp: enableRegexp = true,
+    solid: enableSolid = false,
     svelte: enableSvelte = false,
     typescript: enableTypeScript = isPackageExists('typescript'),
     unocss: enableUnoCSS = false,
@@ -93,7 +105,7 @@ export async function nyxb(
   if (stylisticOptions && !('jsx' in stylisticOptions))
     stylisticOptions.jsx = options.jsx ?? true
 
-  const configs: Awaitable<FlatConfigItem[]>[] = []
+  const configs: Awaitable<TypedFlatConfigItem[]>[] = []
 
   if (enableGitignore) {
     if (typeof enableGitignore !== 'boolean') {
@@ -121,6 +133,7 @@ export async function nyxb(
       stylistic: stylisticOptions,
     }),
     unicorn(),
+    command(),
 
     // Optional plugins (installed but not enabled by default)
     perfectionist(),
@@ -140,9 +153,13 @@ export async function nyxb(
   if (stylisticOptions) {
     configs.push(stylistic({
       ...stylisticOptions,
+      lessOpinionated: options.lessOpinionated,
       overrides: getOverrides(options, 'stylistic'),
     }))
   }
+
+  if (enableRegexp)
+    configs.push(regexp(typeof enableRegexp === 'boolean' ? {} : enableRegexp))
 
   if (options.test ?? true) {
     configs.push(test({
@@ -163,6 +180,14 @@ export async function nyxb(
   if (enableReact) {
     configs.push(react({
       overrides: getOverrides(options, 'react'),
+      tsconfigPath: getOverrides(options, 'typescript').tsconfigPath,
+    }))
+  }
+
+  if (enableSolid) {
+    configs.push(solid({
+      overrides: getOverrides(options, 'solid'),
+      tsconfigPath: getOverrides(options, 'typescript').tsconfigPath,
       typescript: !!enableTypeScript,
     }))
   }
@@ -238,19 +263,24 @@ export async function nyxb(
     if (key in options)
       acc[key] = options[key] as any
     return acc
-  }, {} as FlatConfigItem)
+  }, {} as TypedFlatConfigItem)
   if (Object.keys(fusedConfig).length)
     configs.push([fusedConfig])
 
-  const merged = await combine(
-    ...configs,
-    ...userConfigs,
-  )
+  let composer = new FlatConfigComposer<TypedFlatConfigItem, ConfigNames>()
 
-  if (autoRenamePlugins)
-    return renamePluginInConfigs(merged, defaultPluginRenaming)
+  composer = composer
+    .append(
+      ...configs,
+      ...userConfigs as any,
+    )
 
-  return merged
+  if (autoRenamePlugins) {
+    composer = composer
+      .renamePlugins(defaultPluginRenaming)
+  }
+
+  return composer
 }
 
 export type ResolvedOptions<T> = T extends boolean

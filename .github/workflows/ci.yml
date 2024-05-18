@@ -24,35 +24,19 @@ jobs:
           node-version: lts/*
 
       - name: Setup
-        run: npm i -g @antfu/ni
+        run: npm i -g @nyxb/nyxi
 
       - name: Install
-        run: nci
+        run: nyxci
+
+      - name: Build
+        run: nyxr build
 
       - name: Lint
-        run: nr lint
-
-  typecheck:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-
-      - name: Set node
-        uses: actions/setup-node@v3
-        with:
-          node-version: lts/*
-
-      - name: Setup
-        run: npm i -g @antfu/ni
-
-      - name: Install
-        run: nci
+        run: nyxr lint
 
       - name: Typecheck
-        run: nr typecheck
+        run: nyxr typecheck
 
   test:
     runs-on: ${{ matrix.os }}
@@ -75,13 +59,13 @@ jobs:
           node-version: ${{ matrix.node }}
 
       - name: Setup
-        run: npm i -g @antfu/ni
+        run: npm i -g @nyxb/nyxi
 
       - name: Install
-        run: nci
+        run: nyxci
 
       - name: Build
-        run: nr build
+        run: nyxr build
 
       - name: Test
-        run: nr test
+        run: nyxr test

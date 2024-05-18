@@ -1,15 +1,15 @@
-import type { FlatConfigItem } from '../types'
+import type { TypedFlatConfigItem } from '../types'
 
 /**
  * Sort package.json
  *
  * Requires `jsonc` config
  */
-export async function sortPackageJson(): Promise<FlatConfigItem[]> {
+export async function sortPackageJson(): Promise<TypedFlatConfigItem[]> {
   return [
     {
       files: ['**/package.json'],
-      name: 'nyxb:sort-package-json',
+      name: 'nyxb/sort/package-json',
       rules: {
         'jsonc/sort-array-values': [
           'error',
@@ -112,11 +112,11 @@ export async function sortPackageJson(): Promise<FlatConfigItem[]> {
  * Requires `jsonc` config
  */
 
-export function sortTsconfig(): FlatConfigItem[] {
+export function sortTsconfig(): TypedFlatConfigItem[] {
   return [
     {
       files: ['**/tsconfig.json', '**/tsconfig.*.json'],
-      name: 'nyxb:sort-tsconfig',
+      name: 'nyxb/sort/tsconfig-json',
       rules: {
         'jsonc/sort-keys': [
           'error',

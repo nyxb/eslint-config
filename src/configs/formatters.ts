@@ -1,14 +1,14 @@
 import { isPackageExists } from 'local-pkg'
-import { GLOB_ASTRO, GLOB_CSS, GLOB_LESS, GLOB_MARKDOWN, GLOB_POSTCSS, GLOB_SCSS } from '../globs'
+import { GLOB_ASTRO, GLOB_CSS, GLOB_GRAPHQL, GLOB_HTML, GLOB_LESS, GLOB_MARKDOWN, GLOB_POSTCSS, GLOB_SCSS, GLOB_XML } from '../globs'
 import type { VendoredPrettierOptions } from '../vender/prettier-types'
 import { ensurePackages, interopDefault, parserPlain } from '../utils'
-import type { FlatConfigItem, OptionsFormatters, StylisticConfig } from '../types'
+import type { OptionsFormatters, StylisticConfig, TypedFlatConfigItem } from '../types'
 import { StylisticConfigDefaults } from './stylistic'
 
 export async function formatters(
   options: OptionsFormatters | true = {},
   stylistic: StylisticConfig = {},
-): Promise<FlatConfigItem[]> {
+): Promise<TypedFlatConfigItem[]> {
   if (options === true) {
     options = {
       astro: isPackageExists('astro'),
@@ -17,6 +17,7 @@ export async function formatters(
       html: true,
       markdown: true,
       slidev: isPackageExists('@slidev/cli'),
+      xml: isPackageExists('@prettier/plugin-xml'),
     }
   }
 
@@ -24,6 +25,7 @@ export async function formatters(
     'eslint-plugin-format',
     options.markdown && options.slidev ? 'prettier-plugin-slidev' : undefined,
     options.astro ? 'prettier-plugin-astro' : undefined,
+    options.xml ? '@prettier/plugin-xml' : undefined,
   ])
 
   if (options.slidev && options.markdown !== true && options.markdown !== 'prettier')
@@ -43,16 +45,23 @@ export async function formatters(
       endOfLine: 'auto',
       semi,
       singleQuote: quotes === 'single',
-      tabWidth: typeof indent === 'number' ? indent : 2,
+      tabWidth: typeof indent === 'number' ? indent : 3,
       trailingComma: 'all',
       useTabs: indent === 'tab',
     } satisfies VendoredPrettierOptions,
     options.prettierOptions || {},
   )
 
+  const prettierXmlOptions = {
+    xmlQuoteAttributes: 'double',
+    xmlSelfClosingSpace: true,
+    xmlSortAttributesByKey: false,
+    xmlWhitespaceSensitivity: 'ignore',
+  }
+
   const dprintOptions = Object.assign(
     {
-      indentWidth: typeof indent === 'number' ? indent : 2,
+      indentWidth: typeof indent === 'number' ? indent : 3,
       quoteStyle: quotes === 'single' ? 'preferSingle' : 'preferDouble',
       useTabs: indent === 'tab',
     },
@@ -61,9 +70,9 @@ export async function formatters(
 
   const pluginFormat = await interopDefault(import('eslint-plugin-format'))
 
-  const configs: FlatConfigItem[] = [
+  const configs: TypedFlatConfigItem[] = [
     {
-      name: 'nyxb:formatters:setup',
+      name: 'nyxb/formatter/setup',
       plugins: {
         format: pluginFormat,
       },
@@ -77,7 +86,7 @@ export async function formatters(
         languageOptions: {
           parser: parserPlain,
         },
-        name: 'nyxb:formatter:css',
+        name: 'nyxb/formatter/css',
         rules: {
           'format/prettier': [
             'error',
@@ -93,7 +102,7 @@ export async function formatters(
         languageOptions: {
           parser: parserPlain,
         },
-        name: 'nyxb:formatter:scss',
+        name: 'nyxb/formatter/scss',
         rules: {
           'format/prettier': [
             'error',
@@ -109,7 +118,7 @@ export async function formatters(
         languageOptions: {
           parser: parserPlain,
         },
-        name: 'nyxb:formatter:less',
+        name: 'nyxb/formatter/less',
         rules: {
           'format/prettier': [
             'error',
@@ -125,17 +134,40 @@ export async function formatters(
 
   if (options.html) {
     configs.push({
-      files: ['**/*.html'],
+      files: [GLOB_HTML],
       languageOptions: {
         parser: parserPlain,
       },
-      name: 'nyxb:formatter:html',
+      name: 'nyxb/formatter/html',
       rules: {
         'format/prettier': [
           'error',
           {
             ...prettierOptions,
             parser: 'html',
+          },
+        ],
+      },
+    })
+  }
+
+  if (options.xml) {
+    configs.push({
+      files: [GLOB_XML],
+      languageOptions: {
+        parser: parserPlain,
+      },
+      name: 'nyxb/formatter/xml',
+      rules: {
+        'format/prettier': [
+          'error',
+          {
+            ...prettierXmlOptions,
+            ...prettierOptions,
+            parser: 'xml',
+            plugins: [
+              '@prettier/plugin-xml',
+            ],
           },
         ],
       },
@@ -159,7 +191,7 @@ export async function formatters(
       languageOptions: {
         parser: parserPlain,
       },
-      name: 'nyxb:formatter:markdown',
+      name: 'nyxb/formatter/markdown',
       rules: {
         [`format/${formater}`]: [
           'error',
@@ -184,7 +216,7 @@ export async function formatters(
         languageOptions: {
           parser: parserPlain,
         },
-        name: 'nyxb:formatter:slidev',
+        name: 'nyxb/formatter/slidev',
         rules: {
           'format/prettier': [
             'error',
@@ -209,7 +241,7 @@ export async function formatters(
       languageOptions: {
         parser: parserPlain,
       },
-      name: 'nyxb:formatter:astro',
+      name: 'nyxb/formatter/astro',
       rules: {
         'format/prettier': [
           'error',
@@ -227,11 +259,11 @@ export async function formatters(
 
   if (options.graphql) {
     configs.push({
-      files: ['**/*.graphql'],
+      files: [GLOB_GRAPHQL],
       languageOptions: {
         parser: parserPlain,
       },
-      name: 'nyxb:formatter:graphql',
+      name: 'nyxb/formatter/graphql',
       rules: {
         'format/prettier': [
           'error',

@@ -2,66 +2,17 @@ import type { FlatGitignoreOptions } from 'eslint-config-flat-gitignore'
 import type { ParserOptions } from '@typescript-eslint/parser'
 import type { Options as VueBlocksOptions } from 'eslint-processor-vue-blocks'
 import type { Linter } from 'eslint'
-import type {
-  EslintCommentsRules,
-  EslintRules,
-  FlatESLintConfigItem,
-  ImportRules,
-  JsoncRules,
-  MergeIntersection,
-  NRules,
-  Prefix,
-  ReactHooksRules,
-  ReactRules,
-  RenamePrefix,
-  RuleConfig,
-  VitestRules,
-  VueRules,
-  YmlRules,
-} from '@antfu/eslint-define-config'
-import type { RuleOptions as JSDocRules } from '@eslint-types/jsdoc/types'
-import type { RuleOptions as TypeScriptRules } from '@eslint-types/typescript-eslint/types'
-import type { RuleOptions as UnicornRules } from '@eslint-types/unicorn/types'
-import type { Rules as NyxbRules } from 'eslint-plugin-antfu'
-import type { StylisticCustomizeOptions, UnprefixedRuleOptions as StylisticRules } from '@stylistic/eslint-plugin'
+import type { StylisticCustomizeOptions } from '@stylistic/eslint-plugin'
 import type { VendoredPrettierOptions } from './vender/prettier-types'
-
-export type WrapRuleConfig<T extends { [key: string]: any }> = {
-  [K in keyof T]: T[K] extends RuleConfig ? T[K] : RuleConfig<T[K]>
-}
+import type { ConfigNames, RuleOptions } from './typegen'
 
 export type Awaitable<T> = T | Promise<T>
 
-export type Rules = WrapRuleConfig<
-  MergeIntersection<
-    RenamePrefix<TypeScriptRules, '@typescript-eslint/', 'ts/'> &
-    RenamePrefix<VitestRules, 'vitest/', 'test/'> &
-    RenamePrefix<YmlRules, 'yml/', 'yaml/'> &
-    RenamePrefix<NRules, 'n/', 'node/'> &
-    Prefix<StylisticRules, 'style/'> &
-    Prefix<NyxbRules, 'nyxb/'> &
-    ReactHooksRules &
-    ReactRules &
-    JSDocRules &
-    ImportRules &
-    EslintRules &
-    JsoncRules &
-    VueRules &
-    UnicornRules &
-    EslintCommentsRules &
-    // TODO: TOML rules
-    {
-      'test/no-only-tests': RuleConfig<[]>
-    }
-  >
->
+export type Rules = RuleOptions
 
-export type FlatConfigItem = Omit<FlatESLintConfigItem<Rules, false>, 'plugins'> & {
-  /**
-   * Custom name of each config item
-   */
-  name?: string
+export type { ConfigNames }
 
+export type TypedFlatConfigItem = Omit<Linter.FlatConfig<Linter.RulesRecord & Rules>, 'plugins'> & {
   // Relax plugins type limitation, as most of the plugins did not have correct type info yet.
   /**
    * An object containing a name-value mapping of plugin names to plugin objects. When `files` is specified, these plugins are only available to the matching files.
@@ -70,8 +21,6 @@ export type FlatConfigItem = Omit<FlatESLintConfigItem<Rules, false>, 'plugins'>
    */
   plugins?: Record<string, any>
 }
-
-export type UserConfigItem = FlatConfigItem | Linter.FlatConfig
 
 export interface OptionsFiles {
   /**
@@ -115,6 +64,13 @@ export interface OptionsFormatters {
    * Currently only support Prettier.
    */
   html?: 'prettier' | boolean
+
+  /**
+   * Enable formatting support for XML.
+   *
+   * Currently only support Prettier.
+   */
+  xml?: 'prettier' | boolean
 
   /**
    * Enable formatting support for Markdown.
@@ -204,7 +160,14 @@ export interface StylisticConfig extends Pick<StylisticCustomizeOptions, 'indent
 }
 
 export interface OptionsOverrides {
-  overrides?: FlatConfigItem['rules']
+  overrides?: TypedFlatConfigItem['rules']
+}
+
+export interface OptionsRegExp {
+  /**
+   * Override rulelevels
+   */
+  level?: 'error' | 'warn'
 }
 
 export interface OptionsIsInEditor {
@@ -234,6 +197,17 @@ export interface OptionsConfig extends OptionsComponentExts {
    * @default true
    */
   gitignore?: boolean | FlatGitignoreOptions
+
+  /**
+   * Disable some opinionated rules to Nyxb's preference.
+   *
+   * Including:
+   * - `nyxb/top-level-function`
+   * - `nyxb/if-newline`
+   *
+   * @default false
+   */
+  lessOpinionated?: boolean
 
   /**
    * Core rules. Can't be disabled.
@@ -318,21 +292,39 @@ export interface OptionsConfig extends OptionsComponentExts {
   /**
    * Enable stylistic rules.
    *
+   * @see https://eslint.style/
    * @default true
    */
   stylistic?: boolean | (StylisticConfig & OptionsOverrides)
 
   /**
+   * Enable regexp rules.
+   *
+   * @see https://ota-meshi.github.io/eslint-plugin-regexp/
+   * @default true
+   */
+  regexp?: boolean | (OptionsRegExp & OptionsOverrides)
+
+  /**
    * Enable react rules.
    *
    * Requires installing:
-   * - `eslint-plugin-react`
+   * - `@eslint-react/eslint-plugin`
    * - `eslint-plugin-react-hooks`
    * - `eslint-plugin-react-refresh`
    *
    * @default false
    */
   react?: boolean | OptionsOverrides
+  /**
+   * Enable solid rules.
+   *
+   * Requires installing:
+   * - `eslint-plugin-solid`
+   *
+   * @default false
+   */
+  solid?: boolean | OptionsOverrides
 
   /**
    * Enable svelte rules.
@@ -385,16 +377,16 @@ export interface OptionsConfig extends OptionsComponentExts {
    * @deprecated use `overrides` option in each integration key instead
    */
   overrides?: {
-    stylistic?: FlatConfigItem['rules']
-    javascript?: FlatConfigItem['rules']
-    typescript?: FlatConfigItem['rules']
-    test?: FlatConfigItem['rules']
-    vue?: FlatConfigItem['rules']
-    jsonc?: FlatConfigItem['rules']
-    markdown?: FlatConfigItem['rules']
-    yaml?: FlatConfigItem['rules']
-    toml?: FlatConfigItem['rules']
-    react?: FlatConfigItem['rules']
-    svelte?: FlatConfigItem['rules']
+    stylistic?: TypedFlatConfigItem['rules']
+    javascript?: TypedFlatConfigItem['rules']
+    typescript?: TypedFlatConfigItem['rules']
+    test?: TypedFlatConfigItem['rules']
+    vue?: TypedFlatConfigItem['rules']
+    jsonc?: TypedFlatConfigItem['rules']
+    markdown?: TypedFlatConfigItem['rules']
+    yaml?: TypedFlatConfigItem['rules']
+    toml?: TypedFlatConfigItem['rules']
+    react?: TypedFlatConfigItem['rules']
+    svelte?: TypedFlatConfigItem['rules']
   }
 }
