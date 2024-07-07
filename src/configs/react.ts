@@ -85,7 +85,7 @@ export async function react(
         'react-dom/no-dangerously-set-innerhtml': 'warn',
         'react-dom/no-dangerously-set-innerhtml-with-children': 'error',
         'react-dom/no-find-dom-node': 'error',
-        'react-dom/no-missing-button-type': 'warn',
+        'react-dom/no-missing-button-type': 'off',
         'react-dom/no-missing-iframe-sandbox': 'warn',
         'react-dom/no-namespace': 'error',
         'react-dom/no-render-return-value': 'error',
@@ -95,7 +95,7 @@ export async function react(
 
         // recommended rules react-hooks
         'react-hooks/exhaustive-deps': 'warn',
-        'react-hooks/rules-of-hooks': 'error',
+        'react-hooks/rules-of-hooks': 'off',
 
         // react refresh
         'react-refresh/only-export-components': [
@@ -129,7 +129,7 @@ export async function react(
         // recommended rules from @eslint-react
         'react/ensure-forward-ref-using-ref': 'warn',
         'react/no-access-state-in-setstate': 'error',
-        'react/no-array-index-key': 'warn',
+        'react/no-array-index-key': 'off',
         'react/no-children-count': 'warn',
         'react/no-children-for-each': 'warn',
         'react/no-children-map': 'warn',
