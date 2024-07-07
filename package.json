@@ -151,7 +151,7 @@
     "@unocss/eslint-plugin": "^0.61.2",
     "astro-eslint-parser": "^1.0.2",
     "bumping": "^9.2.1",
-    "eslint": "npm:eslint-ts-patch@9.5.0-0",
+    "eslint": "^9.6.0",
     "eslint-plugin-astro": "^1.2.2",
     "eslint-plugin-format": "^0.1.2",
     "eslint-plugin-react-hooks": "^5.1.0-rc-fb9a90fa48-20240614",
@@ -179,6 +179,7 @@
     "vue": "^3.4.31"
   },
   "resolutions": {
+    "@typescript-eslint/eslint-plugin": "~7.15.0",
     "tsx": "~4.16.2"
   }
 }
