@@ -3,7 +3,7 @@ import type { OptionsOverrides, StylisticConfig, TypedFlatConfigItem } from '../
 import { pluginNyxb } from '../plugins'
 
 export const StylisticConfigDefaults: StylisticConfig = {
-  indent: 3,
+  indent: 2,
   jsx: true,
   quotes: 'single',
   semi: false,
@@ -56,9 +56,9 @@ export async function stylistic(
               curly: ['error', 'all'],
             }
           : {
+              'nyxb/curly': 'error',
               'nyxb/if-newline': 'error',
               'nyxb/top-level-function': 'error',
-              'curly': ['error', 'multi-or-nest', 'consistent'],
             }
         ),
 

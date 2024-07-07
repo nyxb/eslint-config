@@ -1,7 +1,7 @@
 import { isPackageExists } from 'local-pkg'
 import { ensurePackages, interopDefault, toArray } from '../utils'
 import type { OptionsFiles, OptionsOverrides, OptionsTypeScriptWithTypes, TypedFlatConfigItem } from '../types'
-import { GLOB_TS, GLOB_TSX } from '../globs'
+import { GLOB_SRC } from '../globs'
 
 // react refresh
 const ReactRefreshAllowConstantExportPackages = [
@@ -21,7 +21,7 @@ export async function react(
   options: OptionsTypeScriptWithTypes & OptionsOverrides & OptionsFiles = {},
 ): Promise<TypedFlatConfigItem[]> {
   const {
-    files = [GLOB_TS, GLOB_TSX],
+    files = [GLOB_SRC],
     overrides = {},
   } = options
 
@@ -144,6 +144,7 @@ export async function react(
         'react/no-create-ref': 'error',
         'react/no-direct-mutation-state': 'error',
         'react/no-duplicate-key': 'error',
+        'react/no-implicit-key': 'error',
         'react/no-missing-key': 'error',
         'react/no-nested-components': 'warn',
         'react/no-redundant-should-component-update': 'error',

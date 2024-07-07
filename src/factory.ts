@@ -13,6 +13,7 @@ import {
   javascript,
   jsdoc,
   jsonc,
+  jsx,
   markdown,
   node,
   perfectionist,
@@ -86,7 +87,8 @@ export function nyxb(
     autoRenamePlugins = true,
     componentExts = [],
     gitignore: enableGitignore = true,
-    isInEditor = !!((process.env.VSCODE_PID || process.env.VSCODE_CWD || process.env.JETBRAINS_IDE || process.env.VIM) && !process.env.CI),
+    isInEditor = !!((process.env.VSCODE_PID || process.env.VSCODE_CWD || process.env.JETBRAINS_IDE || process.env.VIM || process.env.NVIM) && !process.env.CI),
+    jsx: enableJsx = true,
     react: enableReact = false,
     regexp: enableRegexp = true,
     solid: enableSolid = false,
@@ -103,7 +105,7 @@ export function nyxb(
       : {}
 
   if (stylisticOptions && !('jsx' in stylisticOptions))
-    stylisticOptions.jsx = options.jsx ?? true
+    stylisticOptions.jsx = enableJsx
 
   const configs: Awaitable<TypedFlatConfigItem[]>[] = []
 
@@ -116,6 +118,9 @@ export function nyxb(
         configs.push(interopDefault(import('eslint-config-flat-gitignore')).then(r => [r()]))
     }
   }
+
+  const typescriptOptions = resolveSubOptions(options, 'typescript')
+  const tsconfigPath = 'tsconfigPath' in typescriptOptions ? typescriptOptions.tsconfigPath : undefined
 
   // Base configs
   configs.push(
@@ -139,12 +144,17 @@ export function nyxb(
     perfectionist(),
   )
 
-  if (enableVue)
+  if (enableVue) {
     componentExts.push('vue')
+  }
+
+  if (enableJsx) {
+    configs.push(jsx())
+  }
 
   if (enableTypeScript) {
     configs.push(typescript({
-      ...resolveSubOptions(options, 'typescript'),
+      ...typescriptOptions,
       componentExts,
       overrides: getOverrides(options, 'typescript'),
     }))
@@ -158,8 +168,9 @@ export function nyxb(
     }))
   }
 
-  if (enableRegexp)
+  if (enableRegexp) {
     configs.push(regexp(typeof enableRegexp === 'boolean' ? {} : enableRegexp))
+  }
 
   if (options.test ?? true) {
     configs.push(test({
@@ -180,14 +191,14 @@ export function nyxb(
   if (enableReact) {
     configs.push(react({
       overrides: getOverrides(options, 'react'),
-      tsconfigPath: getOverrides(options, 'typescript').tsconfigPath,
+      tsconfigPath,
     }))
   }
 
   if (enableSolid) {
     configs.push(solid({
       overrides: getOverrides(options, 'solid'),
-      tsconfigPath: getOverrides(options, 'typescript').tsconfigPath,
+      tsconfigPath,
       typescript: !!enableTypeScript,
     }))
   }

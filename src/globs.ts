@@ -26,6 +26,7 @@ export const GLOB_TOML = '**/*.toml'
 export const GLOB_XML = '**/*.xml'
 export const GLOB_HTML = '**/*.htm?(l)'
 export const GLOB_ASTRO = '**/*.astro'
+export const GLOB_ASTRO_TS = '**/*.astro/*.ts'
 export const GLOB_GRAPHQL = '**/*.{g,graph}ql'
 
 export const GLOB_MARKDOWN_CODE = `${GLOB_MARKDOWN}/${GLOB_SRC}`
@@ -76,6 +77,7 @@ export const GLOB_EXCLUDE = [
   '**/.output',
   '**/.vite-inspect',
   '**/.yarn',
+  '**/vite.config.*.timestamp-*',
 
   '**/CHANGELOG*.md',
   '**/*.min.*',

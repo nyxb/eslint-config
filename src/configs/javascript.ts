@@ -35,6 +35,9 @@ export async function javascript(
       linterOptions: {
         reportUnusedDisableDirectives: true,
       },
+      name: 'nyxb/javascript/setup',
+    },
+    {
       name: 'nyxb/javascript/rules',
       plugins: {
         'nyxb': pluginNyxb,

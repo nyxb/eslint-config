@@ -12,7 +12,7 @@ export async function toml(
   } = options
 
   const {
-    indent = 3,
+    indent = 2,
   } = typeof stylistic === 'boolean' ? {} : stylistic
 
   const [

@@ -12,7 +12,7 @@ export async function svelte(
   } = options
 
   const {
-    indent = 3,
+    indent = 2,
     quotes = 'single',
   } = typeof stylistic === 'boolean' ? {} : stylistic
 

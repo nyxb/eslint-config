@@ -138,6 +138,12 @@ export interface OptionsTypeScriptParserOptions {
    * @default ['**\/*.{ts,tsx}']
    */
   filesTypeAware?: string[]
+
+  /**
+   * Glob patterns for files that should not be type aware.
+   * @default ['**\/*.md\/**', '**\/*.astro/*.ts']
+   */
+  ignoresTypeAware?: string[]
 }
 
 export interface OptionsTypeScriptWithTypes {
@@ -156,7 +162,9 @@ export interface OptionsStylistic {
   stylistic?: boolean | StylisticConfig
 }
 
-export interface StylisticConfig extends Pick<StylisticCustomizeOptions, 'indent' | 'quotes' | 'jsx' | 'semi'> {
+// eslint-disable-next-line ts/no-empty-object-type
+export interface StylisticConfig
+  extends Pick<StylisticCustomizeOptions, 'indent' | 'quotes' | 'jsx' | 'semi'> {
 }
 
 export interface OptionsOverrides {
@@ -199,7 +207,7 @@ export interface OptionsConfig extends OptionsComponentExts {
   gitignore?: boolean | FlatGitignoreOptions
 
   /**
-   * Disable some opinionated rules to Nyxb's preference.
+   * Disable some opinionated rules to Anthony's preference.
    *
    * Including:
    * - `nyxb/top-level-function`
