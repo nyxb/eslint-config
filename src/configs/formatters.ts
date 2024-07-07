@@ -61,7 +61,7 @@ export async function formatters(
 
   const dprintOptions = Object.assign(
     {
-      indentWidth: typeof indent === 'number' ? indent : 2,
+      indentWidth: typeof indent === 'number' ? indent : 3,
       quoteStyle: quotes === 'single' ? 'preferSingle' : 'preferDouble',
       useTabs: indent === 'tab',
     },

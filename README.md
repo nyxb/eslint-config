@@ -176,7 +176,7 @@ export default nyxb({
 
   // Or customize the stylistic rules
   stylistic: {
-    indent: 2, // 4, or 'tab'
+    indent: 3, // 4, or 'tab'
     quotes: 'single', // or 'double'
   },
 

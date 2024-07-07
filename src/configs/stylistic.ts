@@ -3,7 +3,7 @@ import type { OptionsOverrides, StylisticConfig, TypedFlatConfigItem } from '../
 import { pluginNyxb } from '../plugins'
 
 export const StylisticConfigDefaults: StylisticConfig = {
-  indent: 2,
+  indent: 3,
   jsx: true,
   quotes: 'single',
   semi: false,
