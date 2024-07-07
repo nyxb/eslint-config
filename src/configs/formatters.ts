@@ -45,7 +45,7 @@ export async function formatters(
       endOfLine: 'auto',
       semi,
       singleQuote: quotes === 'single',
-      tabWidth: typeof indent === 'number' ? indent : 2,
+      tabWidth: typeof indent === 'number' ? indent : 3,
       trailingComma: 'all',
       useTabs: indent === 'tab',
     } satisfies VendoredPrettierOptions,
