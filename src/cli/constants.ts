@@ -93,6 +93,10 @@ export const extraOptions: PromItem<ExtraLibrariesOption>[] = [
     label: c.cyan('UnoCSS'),
     value: 'unocss',
   },
+  {
+    label: c.cyan('TailwindCSS'),
+    value: 'tailwindcss',
+  },
 ]
 
 export const extra: ExtraLibrariesOption[] = extraOptions.map(({ value }) => (value))

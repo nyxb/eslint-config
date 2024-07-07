@@ -47,6 +47,9 @@ export async function updateEslintFiles(result: PromptResult) {
   if (result.extra.includes('unocss'))
     configLines.push(`unocss: true,`)
 
+  if (result.extra.includes('tailwindcss'))
+    configLines.push(`tailwindcss: true,`)
+
   for (const framework of result.frameworks)
     configLines.push(`${framework}: true,`)
 

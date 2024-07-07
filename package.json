@@ -157,6 +157,7 @@
     "eslint-plugin-react-refresh": "^0.4.7",
     "eslint-plugin-solid": "^0.14.1",
     "eslint-plugin-svelte": "^2.41.0",
+    "eslint-plugin-tailwindcss": "3.17.4",
     "eslint-ts-patch": "9.5.0-0",
     "eslint-typegen": "^0.2.4",
     "esno": "^4.7.0",

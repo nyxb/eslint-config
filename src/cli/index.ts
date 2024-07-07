@@ -32,7 +32,7 @@ const instance = yargs(hideBin(process.argv))
       .option('extra', {
         alias: 'e',
         array: true,
-        description: 'Use the extra utils: formatter / perfectionist / unocss',
+        description: 'Use the extra utils: formatter / perfectionist / unocss / tailwindcss',
         type: 'string',
       })
       .help(),

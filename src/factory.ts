@@ -23,6 +23,7 @@ import {
   sortTsconfig,
   stylistic,
   svelte,
+  tailwindcss,
   test,
   toml,
   typescript,
@@ -93,6 +94,7 @@ export function nyxb(
     regexp: enableRegexp = true,
     solid: enableSolid = false,
     svelte: enableSvelte = false,
+    tailwindcss: enableTailwindCSS = false,
     typescript: enableTypeScript = isPackageExists('typescript'),
     unocss: enableUnoCSS = false,
     vue: enableVue = VuePackages.some(i => isPackageExists(i)),
@@ -215,6 +217,13 @@ export function nyxb(
     configs.push(unocss({
       ...resolveSubOptions(options, 'unocss'),
       overrides: getOverrides(options, 'unocss'),
+    }))
+  }
+
+  if (enableTailwindCSS) {
+    configs.push(tailwindcss({
+      ...resolveSubOptions(options, 'tailwindcss'),
+      overrides: getOverrides(options, 'tailwindcss'),
     }))
   }
 

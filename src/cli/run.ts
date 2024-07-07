@@ -22,7 +22,7 @@ export interface CliRunOptions {
    */
   frameworks?: string[]
   /**
-   * Use the extra utils: formatter / perfectionist / unocss
+   * Use the extra utils: formatter / perfectionist / unocss / tailwindcss
    */
   extra?: string[]
 }

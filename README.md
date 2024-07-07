@@ -7,7 +7,7 @@
 - Designed to work with TypeScript, JSX, Vue, JSON, YAML, Toml, Markdown, etc. Out-of-box.
 - Opinionated, but [very customizable](#customization)
 - [ESLint Flat config](https://eslint.org/docs/latest/use/configure/configuration-files-new), compose easily!
-- Optional [React](#react), [Svelte](#svelte), [UnoCSS](#unocss), [Astro](#astro), [Solid](#solid) support
+- Optional [React](#react), [Svelte](#svelte), [UnoCSS](#unocss), [Astro](#astro), [Solid](#solid), [TailwindCSS](#tailwindcss) support
 - Optional [formatters](#formatters) support for formatting CSS, HTML, XML, etc.
 - **Style principle**: Minimal for reading, stable for diff, consistent
   - Sorted imports, dangling commas
@@ -590,6 +590,63 @@ async function foo(msg: string): void {
 ```
 
 The command comments are usually one-off and will be removed along with the transformation.
+
+### TailwindCSS
+
+To enable TailwindCSS support, you need to explicitly turn it on:
+
+```js
+// eslint.config.js
+import nyxb from '@nyxb/eslint-config'
+
+export default nyxb({
+  tailwindcss: true,
+})
+```
+
+
+Running `npx eslint` should prompt you to install the required dependencies, otherwise, you can install them manually:
+
+```bash
+npm i -D eslint-plugin-tailwindcss
+```
+
+
+#### TailwindCSS Options
+
+You can customize the TailwindCSS plugin with the following options:
+
+- **callees**: An array of function names that are used to create class names. Default: `['classnames', 'clsx', 'ctl']`.
+- **classRegex**: A regex pattern to match class attributes. Default: `'^class(Name)?$'`.
+- **config**: Path to the TailwindCSS configuration file. Default: `'tailwind.config.js'`.
+- **cssFiles**: An array of glob patterns to specify which CSS files to lint. Default: `['**/*.css', '!**/node_modules', '!**/.*', '!**/dist', '!**/build']`.
+- **cssFilesRefreshRate**: The refresh rate in milliseconds for watching CSS files. Default: `5000`.
+- **removeDuplicates**: Whether to remove duplicate class names. Default: `true`.
+- **skipClassAttribute**: Whether to skip linting class attributes. Default: `false`.
+- **tags**: An array of custom HTML tags to lint. Default: `[]`.
+- **whitelist**: An array of class names to whitelist from linting. Default: `[]`.
+
+Example configuration:
+
+```js
+// eslint.config.js
+import nyxb from '@nyxb/eslint-config'
+export default nyxb({
+tailwindcss: {
+settings: {
+callees: ['classnames', 'clsx'],
+classRegex: '^class(Name)?$',
+config: 'tailwind.config.js',
+cssFiles: ['/.css', '!/node_modules', '!/.', '!/dist', '!/build'],
+cssFilesRefreshRate: 5000,
+removeDuplicates: true,
+skipClassAttribute: false,
+tags: [],
+whitelist: [],
+},
+},
+})
+```
 
 ### Type Aware Rules
 

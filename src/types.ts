@@ -195,6 +195,58 @@ export interface OptionsUnoCSS extends OptionsOverrides {
   strict?: boolean
 }
 
+export interface OptionsTailwindCSS extends OptionsOverrides {
+  /**
+   * Tailwind CSS specific settings.
+   */
+  settings?: {
+    /**
+     * List of functions that generate class names.
+     */
+    callees?: string[]
+
+    /**
+     * Path to the Tailwind CSS configuration file.
+     */
+    config?: string
+
+    /**
+     * Glob patterns for CSS files to be processed.
+     */
+    cssFiles?: string[]
+
+    /**
+     * Refresh rate for CSS files in milliseconds.
+     */
+    cssFilesRefreshRate?: number
+
+    /**
+     * Remove duplicate class names.
+     */
+    removeDuplicates?: boolean
+
+    /**
+     * Skip class attribute validation.
+     */
+    skipClassAttribute?: boolean
+
+    /**
+     * List of whitelisted class names.
+     */
+    whitelist?: string[]
+
+    /**
+     * List of tags to be used for class names.
+     */
+    tags?: string[]
+
+    /**
+     * Regular expression to match class attributes.
+     */
+    classRegex?: string
+  }
+}
+
 export interface OptionsConfig extends OptionsComponentExts {
   /**
    * Enable gitignore support.
@@ -353,6 +405,16 @@ export interface OptionsConfig extends OptionsComponentExts {
    * @default false
    */
   unocss?: boolean | OptionsUnoCSS
+
+  /**
+   * Enable Tailwindcss rules.
+   *
+   * Requires installing:
+   * - `eslint-plugin-tailwindcss`
+   *
+   * @default false
+   */
+  tailwindcss?: boolean | OptionsTailwindCSS
 
   /**
    * Use external formatters to format files.
