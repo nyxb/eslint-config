@@ -14,7 +14,7 @@ export async function jsdoc(options: OptionsStylistic = {}): Promise<TypedFlatCo
       },
       rules: {
         'jsdoc/check-access': 'warn',
-        'jsdoc/check-param-names': 'warn',
+        'jsdoc/check-param-names': 'off',
         'jsdoc/check-property-names': 'warn',
         'jsdoc/check-types': 'warn',
         'jsdoc/empty-tags': 'warn',

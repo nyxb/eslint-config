@@ -46,7 +46,7 @@ export async function javascript(
       rules: {
         'accessor-pairs': ['error', { enforceForClassMembers: true, setWithoutGet: true }],
 
-        'array-callback-return': 'error',
+        'array-callback-return': 'off',
         'block-scoped-var': 'error',
         'constructor-super': 'error',
         'default-case-last': 'error',
@@ -140,7 +140,7 @@ export async function javascript(
         'no-unreachable-loop': 'error',
         'no-unsafe-finally': 'error',
         'no-unsafe-negation': 'error',
-        'no-unused-expressions': ['error', {
+        'no-unused-expressions': ['off', {
           allowShortCircuit: true,
           allowTaggedTemplates: true,
           allowTernary: true,

@@ -27,13 +27,13 @@ export async function tailwindcss(
       rules: {
         ...pluginTailwindCSS.configs['flat/recommended'].rules,
         'tailwindcss/classnames-order': 'error',
-        'tailwindcss/enforces-negative-arbitrary-values': 'error',
+        'tailwindcss/enforces-negative-arbitrary-values': 'off',
         'tailwindcss/enforces-shorthand': 'error',
         'tailwindcss/migration-from-tailwind-2': 'warn',
-        'tailwindcss/no-arbitrary-value': 'warn',
-        'tailwindcss/no-contradicting-classname': 'error',
-        'tailwindcss/no-custom-classname': 'warn',
-        'tailwindcss/no-unnecessary-arbitrary-value': 'error',
+        'tailwindcss/no-arbitrary-value': 'off',
+        'tailwindcss/no-contradicting-classname': 'off',
+        'tailwindcss/no-custom-classname': 'off',
+        'tailwindcss/no-unnecessary-arbitrary-value': 'warn',
       },
       settings: {
         tailwindcss: {
