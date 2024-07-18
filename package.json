@@ -1,7 +1,7 @@
 {
   "name": "@nyxb/eslint-config",
   "type": "module",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "packageManager": "pnpm@9.4.0",
   "description": "Nyxb's ESLint config",
   "author": "Dennis Ollhoff <dennis.ollhoff@nyxb.email> (https://github.com/nyxb/)",
