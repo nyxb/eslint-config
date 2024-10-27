@@ -1,4 +1,5 @@
 import type { OptionsFiles, OptionsOverrides, OptionsStylistic, TypedFlatConfigItem } from '../types'
+
 import { GLOB_TOML } from '../globs'
 import { interopDefault } from '../utils'
 
@@ -12,7 +13,7 @@ export async function toml(
   } = options
 
   const {
-    indent = 3,
+    indent = 2,
   } = typeof stylistic === 'boolean' ? {} : stylistic
 
   const [

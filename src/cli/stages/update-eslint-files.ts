@@ -1,16 +1,17 @@
-import fs from 'node:fs'
-import fsp from 'node:fs/promises'
-import process from 'node:process'
-import path from 'node:path'
-import c from 'picocolors'
-import * as p from '@clack/prompts'
-
-// @ts-expect-error missing types
-import parse from 'parse-gitignore'
-import { getEslintConfigContent } from '../utils'
 import type { PromptResult } from '../types'
 
-export async function updateEslintFiles(result: PromptResult) {
+import fs from 'node:fs'
+import fsp from 'node:fs/promises'
+import path from 'node:path'
+import process from 'node:process'
+import * as p from '@clack/prompts'
+// @ts-expect-error missing types
+import parse from 'parse-gitignore'
+import c from 'picocolors'
+
+import { getEslintConfigContent } from '../utils'
+
+export async function updateEslintFiles(result: PromptResult): Promise<void> {
   const cwd = process.cwd()
   const pathESLintIgnore = path.join(cwd, '.eslintignore')
   const pathPackageJSON = path.join(cwd, 'package.json')
@@ -46,9 +47,6 @@ export async function updateEslintFiles(result: PromptResult) {
 
   if (result.extra.includes('unocss'))
     configLines.push(`unocss: true,`)
-
-  if (result.extra.includes('tailwindcss'))
-    configLines.push(`tailwindcss: true,`)
 
   for (const framework of result.frameworks)
     configLines.push(`${framework}: true,`)

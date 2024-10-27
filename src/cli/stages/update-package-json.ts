@@ -1,13 +1,15 @@
-import path from 'node:path'
+import type { ExtraLibrariesOption, PromptResult } from '../types'
 import fsp from 'node:fs/promises'
+import path from 'node:path'
+
 import process from 'node:process'
-import c from 'picocolors'
 import * as p from '@clack/prompts'
 
-import { dependenciesMap, pkgJson } from '../constants'
-import type { ExtraLibrariesOption, PromptResult } from '../types'
+import c from 'picocolors'
 
-export async function updatePackageJson(result: PromptResult) {
+import { dependenciesMap, pkgJson } from '../constants'
+
+export async function updatePackageJson(result: PromptResult): Promise<void> {
   const cwd = process.cwd()
 
   const pathPackageJSON = path.join(cwd, 'package.json')
@@ -19,7 +21,9 @@ export async function updatePackageJson(result: PromptResult) {
 
   pkg.devDependencies ??= {}
   pkg.devDependencies['@nyxb/eslint-config'] = `^${pkgJson.version}`
-  pkg.devDependencies.eslint ??= pkgJson.devDependencies.eslint
+  pkg.devDependencies.eslint ??= pkgJson
+    .devDependencies
+    .eslint
     .replace('npm:eslint-ts-patch@', '')
     .replace(/-\d+$/, '')
 

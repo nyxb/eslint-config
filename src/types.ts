@@ -1,10 +1,10 @@
-import type { FlatGitignoreOptions } from 'eslint-config-flat-gitignore'
-import type { ParserOptions } from '@typescript-eslint/parser'
-import type { Options as VueBlocksOptions } from 'eslint-processor-vue-blocks'
-import type { Linter } from 'eslint'
 import type { StylisticCustomizeOptions } from '@stylistic/eslint-plugin'
-import type { VendoredPrettierOptions } from './vender/prettier-types'
+import type { ParserOptions } from '@typescript-eslint/parser'
+import type { Linter } from 'eslint'
+import type { FlatGitignoreOptions } from 'eslint-config-flat-gitignore'
+import type { Options as VueBlocksOptions } from 'eslint-processor-vue-blocks'
 import type { ConfigNames, RuleOptions } from './typegen'
+import type { VendoredPrettierOptions } from './vender/prettier-types'
 
 export type Awaitable<T> = T | Promise<T>
 
@@ -12,7 +12,7 @@ export type Rules = RuleOptions
 
 export type { ConfigNames }
 
-export type TypedFlatConfigItem = Omit<Linter.FlatConfig<Linter.RulesRecord & Rules>, 'plugins'> & {
+export type TypedFlatConfigItem = Omit<Linter.Config<Linter.RulesRecord & Rules>, 'plugins'> & {
   // Relax plugins type limitation, as most of the plugins did not have correct type info yet.
   /**
    * An object containing a name-value mapping of plugin names to plugin objects. When `files` is specified, these plugins are only available to the matching files.
@@ -33,7 +33,7 @@ export interface OptionsVue extends OptionsOverrides {
   /**
    * Create virtual files for Vue SFC blocks to enable linting.
    *
-   * @see https://github.com/nyxb/eslint-processor-vue-blocks
+   * @see https://github.com/antfu/eslint-processor-vue-blocks
    * @default true
    */
   sfcBlocks?: boolean | VueBlocksOptions
@@ -71,6 +71,13 @@ export interface OptionsFormatters {
    * Currently only support Prettier.
    */
   xml?: 'prettier' | boolean
+
+  /**
+   * Enable formatting support for SVG.
+   *
+   * Currently only support Prettier.
+   */
+  svg?: 'prettier' | boolean
 
   /**
    * Enable formatting support for Markdown.
@@ -127,6 +134,15 @@ export interface OptionsComponentExts {
   componentExts?: string[]
 }
 
+export interface OptionsUnicorn {
+  /**
+   * Include all rules recommended by `eslint-plugin-unicorn`, instead of only ones picked by Anthony.
+   *
+   * @default false
+   */
+  allRecommended?: boolean
+}
+
 export interface OptionsTypeScriptParserOptions {
   /**
    * Additional parser options for TypeScript.
@@ -151,7 +167,12 @@ export interface OptionsTypeScriptWithTypes {
    * When this options is provided, type aware rules will be enabled.
    * @see https://typescript-eslint.io/linting/typed-linting/
    */
-  tsconfigPath?: string | string[]
+  tsconfigPath?: string
+
+  /**
+   * Override type aware rules.
+   */
+  overridesTypeAware?: TypedFlatConfigItem['rules']
 }
 
 export interface OptionsHasTypeScript {
@@ -162,13 +183,21 @@ export interface OptionsStylistic {
   stylistic?: boolean | StylisticConfig
 }
 
-// eslint-disable-next-line ts/no-empty-object-type
 export interface StylisticConfig
   extends Pick<StylisticCustomizeOptions, 'indent' | 'quotes' | 'jsx' | 'semi'> {
 }
 
 export interface OptionsOverrides {
   overrides?: TypedFlatConfigItem['rules']
+}
+
+export interface OptionsProjectType {
+  /**
+   * Type of the project. `lib` will enable more strict rules for libraries.
+   *
+   * @default 'app'
+   */
+  type?: 'app' | 'lib'
 }
 
 export interface OptionsRegExp {
@@ -195,65 +224,13 @@ export interface OptionsUnoCSS extends OptionsOverrides {
   strict?: boolean
 }
 
-export interface OptionsTailwindCSS extends OptionsOverrides {
-  /**
-   * Tailwind CSS specific settings.
-   */
-  settings?: {
-    /**
-     * List of functions that generate class names.
-     */
-    callees?: string[]
-
-    /**
-     * Path to the Tailwind CSS configuration file.
-     */
-    config?: string
-
-    /**
-     * Glob patterns for CSS files to be processed.
-     */
-    cssFiles?: string[]
-
-    /**
-     * Refresh rate for CSS files in milliseconds.
-     */
-    cssFilesRefreshRate?: number
-
-    /**
-     * Remove duplicate class names.
-     */
-    removeDuplicates?: boolean
-
-    /**
-     * Skip class attribute validation.
-     */
-    skipClassAttribute?: boolean
-
-    /**
-     * List of whitelisted class names.
-     */
-    whitelist?: string[]
-
-    /**
-     * List of tags to be used for class names.
-     */
-    tags?: string[]
-
-    /**
-     * Regular expression to match class attributes.
-     */
-    classRegex?: string
-  }
-}
-
-export interface OptionsConfig extends OptionsComponentExts {
+export interface OptionsConfig extends OptionsComponentExts, OptionsProjectType {
   /**
    * Enable gitignore support.
    *
    * Passing an object to configure the options.
    *
-   * @see https://github.com/nyxb/eslint-config-flat-gitignore
+   * @see https://github.com/antfu/eslint-config-flat-gitignore
    * @default true
    */
   gitignore?: boolean | FlatGitignoreOptions
@@ -291,6 +268,13 @@ export interface OptionsConfig extends OptionsComponentExts {
    * @default true
    */
   jsx?: boolean
+
+  /**
+   * Options for eslint-plugin-unicorn.
+   *
+   * @default true
+   */
+  unicorn?: boolean | OptionsUnicorn
 
   /**
    * Enable test support.
@@ -407,14 +391,14 @@ export interface OptionsConfig extends OptionsComponentExts {
   unocss?: boolean | OptionsUnoCSS
 
   /**
-   * Enable Tailwindcss rules.
+   * Enable unocss rules.
    *
    * Requires installing:
    * - `eslint-plugin-tailwindcss`
    *
    * @default false
    */
-  tailwindcss?: boolean | OptionsTailwindCSS
+  tailwindcss?: boolean | OptionsUnoCSS
 
   /**
    * Use external formatters to format files.

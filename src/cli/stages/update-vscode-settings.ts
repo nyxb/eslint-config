@@ -1,14 +1,16 @@
-import path from 'node:path'
-import fsp from 'node:fs/promises'
+import type { PromptResult } from '../types'
 import fs from 'node:fs'
+import fsp from 'node:fs/promises'
+import path from 'node:path'
+
 import process from 'node:process'
-import c from 'picocolors'
 import * as p from '@clack/prompts'
 
-import { vscodeSettingsString } from '../constants'
-import type { PromptResult } from '../types'
+import c from 'picocolors'
 
-export async function updateVscodeSettings(result: PromptResult) {
+import { vscodeSettingsString } from '../constants'
+
+export async function updateVscodeSettings(result: PromptResult): Promise<void> {
   const cwd = process.cwd()
 
   if (!result.updateVscodeSettings)

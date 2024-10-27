@@ -1,6 +1,7 @@
-import { ensurePackages, interopDefault } from '../utils'
 import type { OptionsFiles, OptionsHasTypeScript, OptionsOverrides, OptionsStylistic, TypedFlatConfigItem } from '../types'
+
 import { GLOB_SVELTE } from '../globs'
+import { ensurePackages, interopDefault } from '../utils'
 
 export async function svelte(
   options: OptionsHasTypeScript & OptionsOverrides & OptionsStylistic & OptionsFiles = {},
@@ -12,7 +13,7 @@ export async function svelte(
   } = options
 
   const {
-    indent = 3,
+    indent = 2,
     quotes = 'single',
   } = typeof stylistic === 'boolean' ? {} : stylistic
 
@@ -78,12 +79,16 @@ export async function svelte(
         'svelte/no-useless-mustaches': 'error',
         'svelte/require-store-callbacks-use-set-param': 'error',
         'svelte/system': 'error',
-        'svelte/valid-compile': 'error',
         'svelte/valid-each-key': 'error',
 
         'unused-imports/no-unused-vars': [
           'error',
-          { args: 'after-used', argsIgnorePattern: '^_', vars: 'all', varsIgnorePattern: '^(_|\\$\\$Props$|\\$\\$Events$|\\$\\$Slots$)' },
+          {
+            args: 'after-used',
+            argsIgnorePattern: '^_',
+            vars: 'all',
+            varsIgnorePattern: '^(_|\\$\\$Props$|\\$\\$Events$|\\$\\$Slots$)',
+          },
         ],
 
         ...stylistic

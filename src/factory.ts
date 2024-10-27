@@ -1,13 +1,14 @@
-import process from 'node:process'
-import fs from 'node:fs'
-import { isPackageExists } from 'local-pkg'
-import { FlatConfigComposer } from 'eslint-flat-config-utils'
 import type { Linter } from 'eslint'
+import type { RuleOptions } from './typegen'
 import type { Awaitable, ConfigNames, OptionsConfig, TypedFlatConfigItem } from './types'
+
+import { FlatConfigComposer } from 'eslint-flat-config-utils'
+import { isPackageExists } from 'local-pkg'
 import {
   astro,
   command,
   comments,
+  disables,
   ignores,
   imports,
   javascript,
@@ -23,7 +24,6 @@ import {
   sortTsconfig,
   stylistic,
   svelte,
-  tailwindcss,
   test,
   toml,
   typescript,
@@ -32,21 +32,20 @@ import {
   vue,
   yaml,
 } from './configs'
-import { interopDefault } from './utils'
 import { formatters } from './configs/formatters'
-import { regexp } from './configs/regexp'
 
-const flatConfigProps: (keyof TypedFlatConfigItem)[] = [
+import { regexp } from './configs/regexp'
+import { interopDefault, isInEditorEnv } from './utils'
+
+const flatConfigProps = [
   'name',
-  'files',
-  'ignores',
   'languageOptions',
   'linterOptions',
   'processor',
   'plugins',
   'rules',
   'settings',
-]
+] satisfies (keyof TypedFlatConfigItem)[]
 
 const VuePackages = [
   'vue',
@@ -80,25 +79,32 @@ export const defaultPluginRenaming = {
  *  The merged ESLint configurations.
  */
 export function nyxb(
-  options: OptionsConfig & TypedFlatConfigItem = {},
-  ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.FlatConfig[]>[]
+  options: OptionsConfig & Omit<TypedFlatConfigItem, 'files'> = {},
+  ...userConfigs: Awaitable<TypedFlatConfigItem | TypedFlatConfigItem[] | FlatConfigComposer<any, any> | Linter.Config[]>[]
 ): FlatConfigComposer<TypedFlatConfigItem, ConfigNames> {
   const {
     astro: enableAstro = false,
     autoRenamePlugins = true,
     componentExts = [],
     gitignore: enableGitignore = true,
-    isInEditor = !!((process.env.VSCODE_PID || process.env.VSCODE_CWD || process.env.JETBRAINS_IDE || process.env.VIM || process.env.NVIM) && !process.env.CI),
     jsx: enableJsx = true,
     react: enableReact = false,
     regexp: enableRegexp = true,
     solid: enableSolid = false,
     svelte: enableSvelte = false,
-    tailwindcss: enableTailwindCSS = false,
     typescript: enableTypeScript = isPackageExists('typescript'),
+    unicorn: enableUnicorn = true,
     unocss: enableUnoCSS = false,
     vue: enableVue = VuePackages.some(i => isPackageExists(i)),
   } = options
+
+  let isInEditor = options.isInEditor
+  if (isInEditor == null) {
+    isInEditor = isInEditorEnv()
+    if (isInEditor)
+      // eslint-disable-next-line no-console
+      console.log('[@nyxb/eslint-config] Detected running in editor, some rules are disabled.')
+  }
 
   const stylisticOptions = options.stylistic === false
     ? false
@@ -113,11 +119,16 @@ export function nyxb(
 
   if (enableGitignore) {
     if (typeof enableGitignore !== 'boolean') {
-      configs.push(interopDefault(import('eslint-config-flat-gitignore')).then(r => [r(enableGitignore)]))
+      configs.push(interopDefault(import('eslint-config-flat-gitignore')).then(r => [r({
+        name: 'nyxb/gitignore',
+        ...enableGitignore,
+      })]))
     }
     else {
-      if (fs.existsSync('.gitignore'))
-        configs.push(interopDefault(import('eslint-config-flat-gitignore')).then(r => [r()]))
+      configs.push(interopDefault(import('eslint-config-flat-gitignore')).then(r => [r({
+        name: 'nyxb/gitignore',
+        strict: false,
+      })]))
     }
   }
 
@@ -126,7 +137,7 @@ export function nyxb(
 
   // Base configs
   configs.push(
-    ignores(),
+    ignores(options.ignores),
     javascript({
       isInEditor,
       overrides: getOverrides(options, 'javascript'),
@@ -139,12 +150,15 @@ export function nyxb(
     imports({
       stylistic: stylisticOptions,
     }),
-    unicorn(),
     command(),
 
     // Optional plugins (installed but not enabled by default)
     perfectionist(),
   )
+
+  if (enableUnicorn) {
+    configs.push(unicorn(enableUnicorn === true ? {} : enableUnicorn))
+  }
 
   if (enableVue) {
     componentExts.push('vue')
@@ -159,6 +173,7 @@ export function nyxb(
       ...typescriptOptions,
       componentExts,
       overrides: getOverrides(options, 'typescript'),
+      type: options.type,
     }))
   }
 
@@ -220,13 +235,6 @@ export function nyxb(
     }))
   }
 
-  if (enableTailwindCSS) {
-    configs.push(tailwindcss({
-      ...resolveSubOptions(options, 'tailwindcss'),
-      overrides: getOverrides(options, 'tailwindcss'),
-    }))
-  }
-
   if (enableAstro) {
     configs.push(astro({
       overrides: getOverrides(options, 'astro'),
@@ -277,6 +285,14 @@ export function nyxb(
     ))
   }
 
+  configs.push(
+    disables(),
+  )
+
+  if ('files' in options) {
+    throw new Error('[@nyxb/eslint-config] The first argument should not contain the "files" property as the options are supposed to be global. Place it in the second or later config instead.')
+  }
+
   // User can optionally pass a flat config item to the first argument
   // We pick the known keys as ESLint would do schema validation
   const fusedConfig = flatConfigProps.reduce((acc, key) => {
@@ -319,7 +335,7 @@ export function resolveSubOptions<K extends keyof OptionsConfig>(
 export function getOverrides<K extends keyof OptionsConfig>(
   options: OptionsConfig,
   key: K,
-) {
+): Partial<Linter.RulesRecord & RuleOptions> {
   const sub = resolveSubOptions(options, key)
   return {
     ...(options.overrides as any)?.[key],

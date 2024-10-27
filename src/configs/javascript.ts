@@ -1,7 +1,8 @@
-import globals from 'globals'
 import type { OptionsIsInEditor, OptionsOverrides, TypedFlatConfigItem } from '../types'
+
+import globals from 'globals'
+
 import { pluginNyxb, pluginUnusedImports } from '../plugins'
-import { GLOB_SRC, GLOB_SRC_EXT } from '../globs'
 
 export async function javascript(
   options: OptionsIsInEditor & OptionsOverrides = {},
@@ -46,7 +47,9 @@ export async function javascript(
       rules: {
         'accessor-pairs': ['error', { enforceForClassMembers: true, setWithoutGet: true }],
 
-        'array-callback-return': 'off',
+        'nyxb/no-top-level-await': 'error',
+
+        'array-callback-return': 'error',
         'block-scoped-var': 'error',
         'constructor-super': 'error',
         'default-case-last': 'error',
@@ -117,9 +120,6 @@ export async function javascript(
         ],
         'no-restricted-syntax': [
           'error',
-          'DebuggerStatement',
-          'LabeledStatement',
-          'WithStatement',
           'TSEnumDeclaration[const=true]',
           'TSExportAssignment',
         ],
@@ -140,7 +140,7 @@ export async function javascript(
         'no-unreachable-loop': 'error',
         'no-unsafe-finally': 'error',
         'no-unsafe-negation': 'error',
-        'no-unused-expressions': ['off', {
+        'no-unused-expressions': ['error', {
           allowShortCircuit: true,
           allowTaggedTemplates: true,
           allowTernary: true,
@@ -190,17 +190,6 @@ export async function javascript(
         'prefer-rest-params': 'error',
         'prefer-spread': 'error',
         'prefer-template': 'error',
-        'sort-imports': [
-          'error',
-          {
-            allowSeparatedGroups: false,
-            ignoreCase: false,
-            ignoreDeclarationSort: true,
-            ignoreMemberSort: false,
-            memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
-          },
-        ],
-
         'symbol-description': 'error',
         'unicode-bom': ['error', 'never'],
         'unused-imports/no-unused-imports': isInEditor ? 'off' : 'error',
@@ -220,13 +209,6 @@ export async function javascript(
         'yoda': ['error', 'never'],
 
         ...overrides,
-      },
-    },
-    {
-      files: [`scripts/${GLOB_SRC}`, `cli.${GLOB_SRC_EXT}`],
-      name: 'nyxb/javascript/disables/cli',
-      rules: {
-        'no-console': 'off',
       },
     },
   ]

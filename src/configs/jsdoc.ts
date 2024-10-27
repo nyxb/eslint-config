@@ -1,5 +1,6 @@
-import { interopDefault } from '../utils'
 import type { OptionsStylistic, TypedFlatConfigItem } from '../types'
+
+import { interopDefault } from '../utils'
 
 export async function jsdoc(options: OptionsStylistic = {}): Promise<TypedFlatConfigItem[]> {
   const {
@@ -14,7 +15,7 @@ export async function jsdoc(options: OptionsStylistic = {}): Promise<TypedFlatCo
       },
       rules: {
         'jsdoc/check-access': 'warn',
-        'jsdoc/check-param-names': 'off',
+        'jsdoc/check-param-names': 'warn',
         'jsdoc/check-property-names': 'warn',
         'jsdoc/check-types': 'warn',
         'jsdoc/empty-tags': 'warn',

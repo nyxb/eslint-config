@@ -1,13 +1,14 @@
 import process from 'node:process'
-import c from 'picocolors'
-import { hideBin } from 'yargs/helpers'
-import yargs from 'yargs'
-import * as p from '@clack/prompts'
-import { run } from './run'
-import { pkgJson } from './constants'
 
-function header() {
-  // eslint-disable-next-line no-console
+import * as p from '@clack/prompts'
+import c from 'picocolors'
+import yargs from 'yargs'
+import { hideBin } from 'yargs/helpers'
+
+import { pkgJson } from './constants'
+import { run } from './run'
+
+function header(): void {
   console.log('\n')
   p.intro(`${c.green(`@nyxb/eslint-config `)}${c.dim(`v${pkgJson.version}`)}`)
 }
@@ -32,7 +33,7 @@ const instance = yargs(hideBin(process.argv))
       .option('extra', {
         alias: 'e',
         array: true,
-        description: 'Use the extra utils: formatter / perfectionist / unocss / tailwindcss',
+        description: 'Use the extra utils: formatter / perfectionist / unocss',
         type: 'string',
       })
       .help(),

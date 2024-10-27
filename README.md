@@ -1,6 +1,6 @@
 # @nyxb/eslint-config
 
-[![npm](https://img.shields.io/npm/v/@nyxb/eslint-config?color=444&label=)](https://npmjs.com/package/@nyxb/eslint-config) [![code style](https://nyxb.me/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
+[![npm](https://img.shields.io/npm/v/@nyxb/eslint-config?color=444&label=)](https://npmjs.com/package/@nyxb/eslint-config)
 
 - Auto fix for formatting (aimed to be used standalone **without** Prettier)
 - Reasonable defaults, best practices, only one line of config
@@ -14,10 +14,19 @@
   - Single quotes, no semi
   - Using [ESLint Stylistic](https://github.com/eslint-stylistic/eslint-stylistic)
 - Respects `.gitignore` by default
-- Supports ESLint v9 or v8.50.0+
+- Requires ESLint v9.5.0+
 
-> [!IMPORTANT]
+> [!NOTE]
 > Since v1.0.0, this config is rewritten to the new [ESLint Flat config](https://eslint.org/docs/latest/use/configure/configuration-files-new), check the [release note](https://github.com/nyxb/eslint-config/releases/tag/v1.0.0) for more details.
+>
+> Since v3.0.0, ESLint v9.5.0+ is now required.
+
+> [!WARNING]
+> I am super appreciated and even a bit flatted that so many of you are fond of using this config. For that, I tried to make it as flexible and customizable as possible to fit more use cases.
+>
+> However, please keep in mind that this is still **_a personal config_** with a lot opinions. Changes might not always be pleased by everyone and every use cases.
+>
+> If you are using this config directly, I'd suggest you **review the changes everytime you update**. Or if you want more control over the rules, always feel free to fork it. Thanks!
 
 ## Usage
 
@@ -26,7 +35,7 @@
 We provided a CLI tool to help you set up your project, or migrate from the legacy config to the new flat config with one command.
 
 ```bash
-npx @nyxb/eslint-config@latest
+pnpm dlx @nyxb/eslint-config@latest
 ```
 
 ### Manual Install
@@ -94,7 +103,12 @@ For example:
 }
 ```
 
-## VS Code support (auto fix on save)
+## IDE Support (auto fix on save)
+
+<details>
+<summary>🟦 VS Code support</summary>
+
+<br>
 
 Install [VS Code ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
 
@@ -102,10 +116,6 @@ Add the following settings to your `.vscode/settings.json`:
 
 ```jsonc
 {
-  // Enable the ESlint flat config support
-  // (remove this if your ESLint extension above v3.0.5)
-  "eslint.experimental.useFlatConfig": true,
-
   // Disable the default formatter, use eslint instead
   "prettier.enable": false,
   "editor.formatOnSave": false,
@@ -118,16 +128,16 @@ Add the following settings to your `.vscode/settings.json`:
 
   // Silent the stylistic rules in you IDE, but still auto fix them
   "eslint.rules.customizations": [
-    { "rule": "style/*", "severity": "off" },
-    { "rule": "format/*", "severity": "off" },
-    { "rule": "*-indent", "severity": "off" },
-    { "rule": "*-spacing", "severity": "off" },
-    { "rule": "*-spaces", "severity": "off" },
-    { "rule": "*-order", "severity": "off" },
-    { "rule": "*-dangle", "severity": "off" },
-    { "rule": "*-newline", "severity": "off" },
-    { "rule": "*quotes", "severity": "off" },
-    { "rule": "*semi", "severity": "off" }
+    { "rule": "style/*", "severity": "off", "fixable": true },
+    { "rule": "format/*", "severity": "off", "fixable": true },
+    { "rule": "*-indent", "severity": "off", "fixable": true },
+    { "rule": "*-spacing", "severity": "off", "fixable": true },
+    { "rule": "*-spaces", "severity": "off", "fixable": true },
+    { "rule": "*-order", "severity": "off", "fixable": true },
+    { "rule": "*-dangle", "severity": "off", "fixable": true },
+    { "rule": "*-newline", "severity": "off", "fixable": true },
+    { "rule": "*quotes", "severity": "off", "fixable": true },
+    { "rule": "*semi", "severity": "off", "fixable": true }
   ],
 
   // Enable eslint for all supported languages
@@ -146,10 +156,100 @@ Add the following settings to your `.vscode/settings.json`:
     "xml",
     "gql",
     "graphql",
-    "astro"
+    "astro",
+    "svelte",
+    "css",
+    "less",
+    "scss",
+    "pcss",
+    "postcss"
   ]
 }
 ```
+
+</details>
+
+<details>
+<summary>🟩 Neovim Support</summary>
+
+<br>
+
+Update your configuration to use the following:
+
+```lua
+local customizations = {
+  { rule = 'style/*', severity = 'off', fixable = true },
+  { rule = 'format/*', severity = 'off', fixable = true },
+  { rule = '*-indent', severity = 'off', fixable = true },
+  { rule = '*-spacing', severity = 'off', fixable = true },
+  { rule = '*-spaces', severity = 'off', fixable = true },
+  { rule = '*-order', severity = 'off', fixable = true },
+  { rule = '*-dangle', severity = 'off', fixable = true },
+  { rule = '*-newline', severity = 'off', fixable = true },
+  { rule = '*quotes', severity = 'off', fixable = true },
+  { rule = '*semi', severity = 'off', fixable = true },
+}
+
+local lspconfig = require('lspconfig')
+-- Enable eslint for all supported languages
+lspconfig.eslint.setup(
+  {
+    filetypes = {
+      "javascript",
+      "javascriptreact",
+      "javascript.jsx",
+      "typescript",
+      "typescriptreact",
+      "typescript.tsx",
+      "vue",
+      "html",
+      "markdown",
+      "json",
+      "jsonc",
+      "yaml",
+      "toml",
+      "xml",
+      "gql",
+      "graphql",
+      "astro",
+      "svelte",
+      "css",
+      "less",
+      "scss",
+      "pcss",
+      "postcss"
+    },
+    settings = {
+      -- Silent the stylistic rules in you IDE, but still auto fix them
+      rulesCustomizations = customizations,
+    },
+  }
+)
+```
+
+### Neovim format on save
+
+There's few ways you can achieve format on save in neovim:
+
+- `nvim-lspconfig` has a `EslintFixAll` command predefined, you can create a autocmd to call this command after saving file.
+
+```lua
+lspconfig.eslint.setup({
+  --- ...
+  on_attach = function(client, bufnr)
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      buffer = bufnr,
+      command = "EslintFixAll",
+    })
+  end,
+})
+```
+
+- Use [conform.nvim](https://github.com/stevearc/conform.nvim).
+- Use [none-ls](https://github.com/nvimtools/none-ls.nvim)
+- Use [nvim-lint](https://github.com/mfussenegger/nvim-lint)
+
+</details>
 
 ## Customization
 
@@ -171,16 +271,19 @@ And that's it! Or you can configure each integration individually, for example:
 import nyxb from '@nyxb/eslint-config'
 
 export default nyxb({
+// Type of the project. 'lib' for libraries, the default is 'app'
+  type: 'lib',
+
   // Enable stylistic formatting rules
   // stylistic: true,
 
   // Or customize the stylistic rules
   stylistic: {
-    indent: 3, // 4, or 'tab'
+    indent: 2, // 4, or 'tab'
     quotes: 'single', // or 'double'
   },
 
-  // TypeScript and Vue are auto-detected, you can also explicitly enable them:
+  // TypeScript and Vue are autodetected, you can also explicitly enable them:
   typescript: true,
   vue: true,
 
@@ -283,7 +386,7 @@ Since flat config requires us to explicitly provide the plugin names (instead of
 | `yaml/*`   | `yml/*`                | [eslint-plugin-yml](https://github.com/ota-meshi/eslint-plugin-yml)                        |
 | `ts/*`     | `@typescript-eslint/*` | [@typescript-eslint/eslint-plugin](https://github.com/typescript-eslint/typescript-eslint) |
 | `style/*`  | `@stylistic/*`         | [@stylistic/eslint-plugin](https://github.com/eslint-stylistic/eslint-stylistic)           |
-| `test/*`   | `vitest/*`             | [eslint-plugin-vitest](https://github.com/veritem/eslint-plugin-vitest)                    |
+| `test/*`   | `vitest/*`             | [@vitest/eslint-plugin](https://github.com/vitest-dev/eslint-plugin-vitest)                |
 | `test/*`   | `no-only-tests/*`      | [eslint-plugin-no-only-tests](https://github.com/levibuzolic/eslint-plugin-no-only-tests)  |
 
 When you want to override rules, or disable them inline, you need to update to the new prefix:
@@ -304,6 +407,25 @@ type foo = { bar: 2 }
 > Feel free to open issues if you want to combine this config with some other config presets but faced naming collisions. I am happy to figure out a way to make them work. But at this moment I have no plan to revert the renaming.
 
 Since v2.9.0, this preset will automatically rename the plugins also for your custom configs. You can use the original prefix to override the rules directly.
+
+<details>
+<summary>Change back to original prefix</summary>
+
+If you really want to use the original prefix, you can revert the plugin renaming by:
+
+```ts
+import nyxb from '@nyxb/eslint-config'
+
+export default nyxb()
+  .renamePlugins({
+    ts: '@typescript-eslint',
+    yaml: 'yml',
+    node: 'n'
+    // ...
+  })
+```
+
+</details>
 
 ### Rules Overrides
 
@@ -534,6 +656,19 @@ Running `npx eslint` should prompt you to install the required dependencies, oth
 npm i -D eslint-plugin-solid
 ```
 
+#### TailwindCSS
+
+To enable TailwindCSS support, you need to explicitly turn it on:
+
+```js
+// eslint.config.js
+import nyxb from '@nyxb/eslint-config'
+
+export default nyxb({
+  tailwindcss: true,
+})
+```
+
 #### UnoCSS
 
 To enable UnoCSS support, you need to explicitly turn it on:
@@ -590,63 +725,6 @@ async function foo(msg: string): void {
 ```
 
 The command comments are usually one-off and will be removed along with the transformation.
-
-### TailwindCSS
-
-To enable TailwindCSS support, you need to explicitly turn it on:
-
-```js
-// eslint.config.js
-import nyxb from '@nyxb/eslint-config'
-
-export default nyxb({
-  tailwindcss: true,
-})
-```
-
-
-Running `npx eslint` should prompt you to install the required dependencies, otherwise, you can install them manually:
-
-```bash
-npm i -D eslint-plugin-tailwindcss
-```
-
-
-#### TailwindCSS Options
-
-You can customize the TailwindCSS plugin with the following options:
-
-- **callees**: An array of function names that are used to create class names. Default: `['classnames', 'clsx', 'ctl']`.
-- **classRegex**: A regex pattern to match class attributes. Default: `'^class(Name)?$'`.
-- **config**: Path to the TailwindCSS configuration file. Default: `'tailwind.config.js'`.
-- **cssFiles**: An array of glob patterns to specify which CSS files to lint. Default: `['**/*.css', '!**/node_modules', '!**/.*', '!**/dist', '!**/build']`.
-- **cssFilesRefreshRate**: The refresh rate in milliseconds for watching CSS files. Default: `5000`.
-- **removeDuplicates**: Whether to remove duplicate class names. Default: `true`.
-- **skipClassAttribute**: Whether to skip linting class attributes. Default: `false`.
-- **tags**: An array of custom HTML tags to lint. Default: `[]`.
-- **whitelist**: An array of class names to whitelist from linting. Default: `[]`.
-
-Example configuration:
-
-```js
-// eslint.config.js
-import nyxb from '@nyxb/eslint-config'
-export default nyxb({
-tailwindcss: {
-settings: {
-callees: ['classnames', 'clsx'],
-classRegex: '^class(Name)?$',
-config: 'tailwind.config.js',
-cssFiles: ['/.css', '!/node_modules', '!/.', '!/dist', '!/build'],
-cssFilesRefreshRate: 5000,
-removeDuplicates: true,
-skipClassAttribute: false,
-tags: [],
-whitelist: [],
-},
-},
-})
-```
 
 ### Type Aware Rules
 
@@ -729,21 +807,11 @@ This project follows [Semantic Versioning](https://semver.org/) for releases. Ho
 - Rules options changes
 - Version bumps of dependencies
 
-## Badge
-
-If you enjoy this code style, and would like to mention it in your project, here is the badge you can use:
-
-```md
-[![code style](https://nyxb.me/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
-```
-
-[![code style](https://nyxb.me/badge-code-style.svg)](https://github.com/nyxb/eslint-config)
-
 ## FAQ
 
 ### Prettier?
 
-[Why I don't use Prettier](https://nyxb.me/posts/why-not-prettier)
+[Why I don't use Prettier](https://nyxb.nexus/posts/why-not-prettier)
 
 Well, you can still use Prettier to format files that are not supported well by ESLint yet, such as `.css`, `.html`, etc. See [formatters](#formatters) for more details.
 
@@ -779,8 +847,6 @@ Sure, you can configure and override rules locally in your project to fit your n
 
 - [nyxb/dotfiles](https://github.com/nyxb/dotfiles) - My dotfiles
 - [nyxb/vscode-settings](https://github.com/nyxb/vscode-settings) - My VS Code settings
-- [nyxb/starter-ts](https://github.com/nyxb/starter-ts) - My starter template for TypeScript library
-- [nyxb/vitesse](https://github.com/nyxb/vitesse) - My starter template for Vue & Vite app
 
 ## License
 

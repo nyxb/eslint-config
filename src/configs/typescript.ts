@@ -1,16 +1,27 @@
+import type {
+  OptionsComponentExts,
+  OptionsFiles,
+  OptionsOverrides,
+  OptionsProjectType,
+  OptionsTypeScriptParserOptions,
+  OptionsTypeScriptWithTypes,
+  TypedFlatConfigItem,
+} from '../types'
+
 import process from 'node:process'
 import { GLOB_ASTRO_TS, GLOB_MARKDOWN, GLOB_TS, GLOB_TSX } from '../globs'
-import type { OptionsComponentExts, OptionsFiles, OptionsOverrides, OptionsTypeScriptParserOptions, OptionsTypeScriptWithTypes, TypedFlatConfigItem } from '../types'
 import { pluginNyxb } from '../plugins'
-import { interopDefault, renameRules, toArray } from '../utils'
+import { interopDefault, renameRules } from '../utils'
 
 export async function typescript(
-  options: OptionsFiles & OptionsComponentExts & OptionsOverrides & OptionsTypeScriptWithTypes & OptionsTypeScriptParserOptions = {},
+  options: OptionsFiles & OptionsComponentExts & OptionsOverrides & OptionsTypeScriptWithTypes & OptionsTypeScriptParserOptions & OptionsProjectType = {},
 ): Promise<TypedFlatConfigItem[]> {
   const {
     componentExts = [],
     overrides = {},
+    overridesTypeAware = {},
     parserOptions = {},
+    type = 'app',
   } = options
 
   const files = options.files ?? [
@@ -25,7 +36,7 @@ export async function typescript(
     GLOB_ASTRO_TS,
   ]
   const tsconfigPath = options?.tsconfigPath
-    ? toArray(options.tsconfigPath)
+    ? options.tsconfigPath
     : undefined
   const isTypeAware = !!tsconfigPath
 
@@ -91,15 +102,15 @@ export async function typescript(
       // Install the plugins without globs, so they can be configured separately.
       name: 'nyxb/typescript/setup',
       plugins: {
-        nyxb: pluginNyxb,
+         nyxb: pluginNyxb,
         ts: pluginTs as any,
       },
     },
     // assign type-aware parser for type-aware files and type-unaware parser for the rest
     ...isTypeAware
       ? [
+          makeParser(false, files),
           makeParser(true, filesTypeAware, ignoresTypeAware),
-          makeParser(false, files, filesTypeAware),
         ]
       : [
           makeParser(false, files),
@@ -117,32 +128,49 @@ export async function typescript(
           { '@typescript-eslint': 'ts' },
         ),
         'no-dupe-class-members': 'off',
-        'no-loss-of-precision': 'off',
         'no-redeclare': 'off',
         'no-use-before-define': 'off',
         'no-useless-constructor': 'off',
-        'ts/ban-ts-comment': ['warn', { 'ts-ignore': 'allow-with-description' }],
+        'ts/ban-ts-comment': ['error', { 'ts-expect-error': 'allow-with-description' }],
         'ts/consistent-type-definitions': ['error', 'interface'],
-        'ts/consistent-type-imports': ['error', { disallowTypeAnnotations: false, prefer: 'type-imports' }],
+        'ts/consistent-type-imports': ['error', {
+          disallowTypeAnnotations: false,
+          prefer: 'type-imports',
+        }],
+
         'ts/method-signature-style': ['error', 'property'], // https://www.totaltypescript.com/method-shorthand-syntax-considered-harmful
         'ts/no-dupe-class-members': 'error',
         'ts/no-dynamic-delete': 'off',
-        'ts/no-empty-object-type': 'off',
+        'ts/no-empty-object-type': ['error', { allowInterfaces: 'always' }],
         'ts/no-explicit-any': 'off',
         'ts/no-extraneous-class': 'off',
         'ts/no-import-type-side-effects': 'error',
         'ts/no-invalid-void-type': 'off',
-        'ts/no-loss-of-precision': 'error',
         'ts/no-non-null-assertion': 'off',
-        'ts/no-redeclare': 'off',
-        'ts/no-require-imports': 'off',
+        'ts/no-redeclare': ['error', { builtinGlobals: false }],
+        'ts/no-require-imports': 'error',
+        'ts/no-unused-expressions': ['error', {
+          allowShortCircuit: true,
+          allowTaggedTemplates: true,
+          allowTernary: true,
+        }],
         'ts/no-unused-vars': 'off',
-        'ts/no-use-before-define': ['error', { classes: false, functions: false, variables: false }],
+        'ts/no-use-before-define': ['error', { classes: false, functions: false, variables: true }],
         'ts/no-useless-constructor': 'off',
         'ts/no-wrapper-object-types': 'error',
-        'ts/prefer-ts-expect-error': 'error',
         'ts/triple-slash-reference': 'off',
         'ts/unified-signatures': 'off',
+
+        ...(type === 'lib'
+          ? {
+              'ts/explicit-function-return-type': ['error', {
+                allowExpressions: true,
+                allowHigherOrderFunctions: true,
+                allowIIFEs: true,
+              }],
+            }
+          : {}
+        ),
         ...overrides,
       },
     },
@@ -151,33 +179,11 @@ export async function typescript(
           files: filesTypeAware,
           ignores: ignoresTypeAware,
           name: 'nyxb/typescript/rules-type-aware',
-          rules: typeAwareRules,
+          rules: {
+            ...typeAwareRules,
+            ...overridesTypeAware,
+          },
         }]
       : [],
-    {
-      files: ['**/*.d.?([cm])ts'],
-      name: 'nyxb/typescript/disables/dts',
-      rules: {
-        'eslint-comments/no-unlimited-disable': 'off',
-        'import/no-duplicates': 'off',
-        'no-restricted-syntax': 'off',
-        'unused-imports/no-unused-vars': 'off',
-      },
-    },
-    {
-      files: ['**/*.{test,spec}.ts?(x)'],
-      name: 'nyxb/typescript/disables/test',
-      rules: {
-        'no-unused-expressions': 'off',
-      },
-    },
-    {
-      files: ['**/*.js', '**/*.cjs'],
-      name: 'nyxb/typescript/disables/cjs',
-      rules: {
-        'ts/no-require-imports': 'off',
-        'ts/no-var-requires': 'off',
-      },
-    },
   ]
 }

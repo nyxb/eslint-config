@@ -1,9 +1,11 @@
+import type { OptionsConfig, TypedFlatConfigItem } from '../src/types'
+
 import { join, resolve } from 'node:path'
-import { afterAll, beforeAll, it } from 'vitest'
-import fs from 'fs-extra'
 import { execa } from 'execa'
 import fg from 'fast-glob'
-import type { OptionsConfig, TypedFlatConfigItem } from '../src/types'
+import fs from 'fs-extra'
+
+import { afterAll, beforeAll, it } from 'vitest'
 
 beforeAll(async () => {
   await fs.rm('_fixtures', { recursive: true, force: true })
@@ -44,7 +46,7 @@ runWithConfig(
   },
 )
 
-// https://github.com/nyxb/eslint-config/issues/255
+// https://github.com/nyxb/eslint-config
 runWithConfig(
   'ts-override',
   {
@@ -53,6 +55,21 @@ runWithConfig(
   {
     rules: {
       'ts/consistent-type-definitions': ['error', 'type'],
+    },
+  },
+)
+
+// https://github.com/nyxb/eslint-config
+runWithConfig(
+  'ts-strict',
+  {
+    typescript: {
+      tsconfigPath: './tsconfig.json',
+    },
+  },
+  {
+    rules: {
+      'ts/no-unsafe-return': ['off'],
     },
   },
 )

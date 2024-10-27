@@ -1,7 +1,15 @@
+import type {
+  OptionsFiles,
+  OptionsHasTypeScript,
+  OptionsOverrides,
+  OptionsStylistic,
+  OptionsVue,
+  TypedFlatConfigItem,
+} from '../types'
+
 import { mergeProcessors } from 'eslint-merge-processors'
-import { interopDefault } from '../utils'
-import type { OptionsFiles, OptionsHasTypeScript, OptionsOverrides, OptionsStylistic, OptionsVue, TypedFlatConfigItem } from '../types'
 import { GLOB_VUE } from '../globs'
+import { interopDefault } from '../utils'
 
 export async function vue(
   options: OptionsVue & OptionsHasTypeScript & OptionsOverrides & OptionsStylistic & OptionsFiles = {},
@@ -18,7 +26,7 @@ export async function vue(
     : options.sfcBlocks ?? {}
 
   const {
-    indent = 3,
+    indent = 2,
   } = typeof stylistic === 'boolean' ? {} : stylistic
 
   const [
@@ -26,7 +34,6 @@ export async function vue(
     parserVue,
     processorVueBlocks,
   ] = await Promise.all([
-    // @ts-expect-error missing types
     interopDefault(import('eslint-plugin-vue')),
     interopDefault(import('vue-eslint-parser')),
     interopDefault(import('eslint-processor-vue-blocks')),
@@ -102,11 +109,13 @@ export async function vue(
               ...pluginVue.configs['vue3-recommended'].rules as any,
             },
 
+        'nyxb/no-top-level-await': 'off',
         'node/prefer-global/process': 'off',
+        'ts/explicit-function-return-type': 'off',
+
         'vue/block-order': ['error', {
           order: ['script', 'template', 'style'],
         }],
-
         'vue/component-name-in-template-casing': ['error', 'PascalCase'],
         'vue/component-options-name-casing': ['error', 'PascalCase'],
         // this is deprecated

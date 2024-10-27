@@ -1,16 +1,18 @@
 /* eslint-disable perfectionist/sort-objects */
+import type { ExtraLibrariesOption, FrameworkOption, PromItem, PromptResult } from './types'
+
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
-import c from 'picocolors'
 import * as p from '@clack/prompts'
+import c from 'picocolors'
 
 import { extra, extraOptions, frameworkOptions, frameworks } from './constants'
-import { isGitClean } from './utils'
-import type { ExtraLibrariesOption, FrameworkOption, PromItem, PromptResult } from './types'
-import { updatePackageJson } from './stages/update-package-json'
 import { updateEslintFiles } from './stages/update-eslint-files'
+import { updatePackageJson } from './stages/update-package-json'
 import { updateVscodeSettings } from './stages/update-vscode-settings'
+
+import { isGitClean } from './utils'
 
 export interface CliRunOptions {
   /**
@@ -22,12 +24,12 @@ export interface CliRunOptions {
    */
   frameworks?: string[]
   /**
-   * Use the extra utils: formatter / perfectionist / unocss / tailwindcss
+   * Use the extra utils: formatter / perfectionist / unocss
    */
   extra?: string[]
 }
 
-export async function run(options: CliRunOptions = {}) {
+export async function run(options: CliRunOptions = {}): Promise<void> {
   const argSkipPrompt = !!process.env.SKIP_PROMPT || options.yes
   const argTemplate = <FrameworkOption[]>options.frameworks?.map(m => m.trim())
   const argExtra = <ExtraLibrariesOption[]>options.extra?.map(m => m.trim())

@@ -1,9 +1,10 @@
-import { interopDefault } from '../utils'
 import type { OptionsOverrides, StylisticConfig, TypedFlatConfigItem } from '../types'
+
 import { pluginNyxb } from '../plugins'
+import { interopDefault } from '../utils'
 
 export const StylisticConfigDefaults: StylisticConfig = {
-  indent: 3,
+  indent: 2,
   jsx: true,
   quotes: 'single',
   semi: false,
@@ -49,6 +50,7 @@ export async function stylistic(
       rules: {
         ...config.rules,
 
+        'nyxb/consistent-chaining': 'error',
         'nyxb/consistent-list-newline': 'error',
 
         ...(lessOpinionated
